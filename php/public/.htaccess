@@ -20,7 +20,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 # means that if the rule matches, no further rules will be processed.
 RewriteRule ^(.*)$ index.php?r=$1 [QSA,L]
 
-<files config.ini>
+<files restful.ini>
   order deny,allow
   deny from all
 </files>
