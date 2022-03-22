@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+  restful-app:
+    build:
+      context: '.'
+      args:
+        uid: ${UID}
+    container_name: restful-app
+    environment:
+      - APACHE_RUN_USER=#${UID}
+      - APACHE_RUN_GROUP=#${UID}
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8000:80
+    networks:
+      backend:
+        aliases:
+          - restful-app
+
+  mariadb-db:
+    image: mariadb:10.7
+    container_name: mariadb-db
+    volumes:
+      - ./run/var:/var/lib/mariadb
+    ports:
+        - 3306:3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=123root4
+      - MARIADB_DATABASE=restful_data
+      - MARIADB_USER=devuser
+      - MARIADB_PASSWORD=devuser!@#
+    networks:
+      backend:
+        aliases:
+          - db
+
+networks:
+  backend:
+    name: backend-network

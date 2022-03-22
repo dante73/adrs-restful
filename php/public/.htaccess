@@ -1,0 +1,26 @@
+# Liga o mod_rewrite
+RewriteEngine On
+
+# Estabelece uma condição : o arquivo informado da url (endpoint) não existe
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Segunda condição : a pasta informada na url (endpoint) também não existe
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Aplica a regra :
+# coloca toda a string da url (^.*$) na variávei @r index.php?r=$1
+#
+# Flag QSA
+# When the replacement URI contains a query string, the default behavior of RewriteRule is
+# to discard the existing query string, and replace it with the newly generated one. Using
+# the [QSA] flag causes the query strings to be combined.
+#
+# Flag L
+# The [L] flag causes mod_rewrite to stop processing the rule set. In most contexts, this
+# means that if the rule matches, no further rules will be processed.
+RewriteRule ^(.*)$ index.php?r=$1 [QSA,L]
+
+<files config.ini>
+  order deny,allow
+  deny from all
+</files>
