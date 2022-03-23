@@ -4,45 +4,50 @@ require_once 'lib/Collection.php';
 
 class Pessoa extends Collection
 {
-    private $collection = 'pessoa';
+    /*
+     * Local and database collection name
+     */
+    private $collection_name = 'pessoa';
 
     /*
-     * Table Fields
+     * Collection Fields
      */
     private $nome;
     private $genero;
     private $nascimento;
 
-    public function __construct()
-    {
-        parent::__construct($this->collection);
+    /*
+     * Construct
+     */
+    public function __construct() {
+        parent::__construct($this->collection_name);
     }
 
     /*
-     * Getters and Setters
+     * Fields getters and setters
      */
-    public function setNome($nome) {
-        $this->nome = $nome;
-    }
-
     public function getNome() {
         return $this->nome;
     }
 
-    public function setGenero($genero) {
-        $this->genero = $genero;
+    public function setNome($nome) {
+        $this->nome = $nome;
     }
 
     public function getGenero() {
         return $this->genero;
     }
 
-    public function setNascimento($nascimento) {
-        $this->nascimento = $nascimento;
+    public function setGenero($genero) {
+        $this->genero = $genero;
     }
 
     public function getNascimento() {
         return $this->nascimento;
+    }
+
+    public function setNascimento($nascimento) {
+        $this->nascimento = $nascimento;
     }
 
     /*
@@ -86,57 +91,47 @@ class Pessoa extends Collection
     }
 
     /*
-     * Main method to write current statement on database
+     * Main method to write current statement on database and answear the rest request
      */
     public function do($method = 'POST', $id = 0, $data = array()) {
+
         /*
-         * If is ID set, load him and set local value object
+         * If is ID set, load it and setup value object
          */
         if ($id !== 0) {
             $this->setId($id);
             $this->load();
             $this->setDataVO();
-
-            /*
-             * Return single record data
-             */
-            if ($method === 'GET') {
-                return $this->dataVO();
-            }
-        }
-        else {
-            /*
-             * Return all records
-             */
-            if ($method === 'GET') {
-                return $this->loadAll();
-            }
         }
 
         /*
-         * Do requested Rest operation
+         * Process sent data
          */
-        if ($method === 'POST') {
-            $this->sanitize($data);
+        switch ($method) {
+            case 'DELETE':
+                $this->delete();
 
-            if ($id === 0) {
-                // Create
-                $this->insert($this->dataVO());
+                return array('code' => 200, 'text' => 'Record deleted successfully.');
+                break;
+            case 'GET':
+                return ( $id !== 0 ? $this->dataVO() : $this->loadAll() );
+                break;
+            case 'POST':
+                $this->sanitize($data);
 
-                return array('code' => 201, 'text' => 'Record created successfully.');
-            }
-            else {
-                // Update
-                $this->update($this->dataVO());
+                if ($id !== 0) {
+                    // Update
+                    $this->update($this->dataVO());
 
-                return array('code' => 200, 'text' => 'Record updated successfully.');
-            }
-        }
-        else if ($method === 'DELETE') {
-            // Delete
-            $this->delete();
+                    return array('code' => 200, 'text' => 'Record updated successfully.');
+                }
+                else {
+                    // Create
+                    $this->insert($this->dataVO());
 
-            return array('code' => 200, 'text' => 'Record deleted successfully.');
+                    return array('code' => 201, 'text' => 'Record created successfully.');
+                }
+                break;
         }
     }
 
