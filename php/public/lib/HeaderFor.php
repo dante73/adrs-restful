@@ -1,39 +1,66 @@
 <?php
 /**
- *  This php script is the HTTP Header setter on local rest api.
- *
- * PHP version 7.3
+ * Configura o ambiente de transmissão HTTP de acordo com o método utilizado na requisição em andamento
  *
  * @category REST_API
- * @package  Restapi
+ * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
- * @license  Mine http://adrs.mine.nu/
- * @link     http://adrs.mine.nu/
  */
 class HeaderFor
 {
-    protected $method;
-    protected $header;
+    /*
+     * Propriedade @method contém o método utilizado na requisição
+     */
+    private $method;
 
+    /*
+     * Propriedade @headers conterá as headers necessárias para a comunicação HTTP
+     */
+    private $header;
+
+    /*
+     * Método de construção desta classe, método de comunicação HTTP da requisição deve ser informado
+     */
     function __construct($method) {
+        /*
+         * Configura método da requisição na propriedade @method
+         */
         $this->setMethod($method);
+
+        /*
+         * Configura headers necessárias na propriedade @headers
+         */
         $this->setHeaders();
     }
 
-    protected function setMethod($method) {
-        $this->method = $method;
-    }
-
-    protected function getMethod() {
+    /*
+     * Getter e setter da propriedade @method
+     */
+    private function getMethod() {
         return $this->method;
     }
 
-    protected function setHeaders() {
+    private function setMethod($method) {
+        $this->method = $method;
+    }
+
+    /*
+     * Carrega na propriedade @header todas as headers necessárias para a comunicação HTTP, de acordo
+     * com o método utlizado na requisição e informado na propriedade @method
+     */
+    private function setHeaders() {
+        /*
+         * A propriedade @header inicializa com algumas headers padrões
+         */
         $this->header = [
             "Access-Control-Allow-Origin: *",
             "Content-Type: application/json; charset=UTF-8",
         ];
 
+        /*
+         * Carrega a propriedade @headers com as headers necessárias para a comunicação HTTP em andamento,
+         * de acordo com o que foi previamente configurado na propriedade @method
+         */
         switch ($this->getMethod()) {
             case 'DELETE';
             case 'POST';
@@ -59,6 +86,9 @@ class HeaderFor
         }
     }
 
+    /*
+     * Configura no documento todas as headers necessárias
+     */
     public function putHeaders() {
         foreach ($this->header as $h) {
             header($h);

@@ -31,7 +31,10 @@ class Pessoa extends Collection
     }
 
     public function setNome($nome) {
-        $this->nome = $nome;
+        if ($this->nome !== $nome) {
+            $this->nome = $nome;
+            $this->flag |= DATA_MODIFIED;
+        }
     }
 
     public function getGenero() {
@@ -39,7 +42,10 @@ class Pessoa extends Collection
     }
 
     public function setGenero($genero) {
-        $this->genero = $genero;
+        if ($this->genero !== $genero) {
+            $this->genero = $genero;
+            $this->flag |= DATA_MODIFIED;
+        }
     }
 
     public function getNascimento() {
@@ -47,7 +53,10 @@ class Pessoa extends Collection
     }
 
     public function setNascimento($nascimento) {
-        $this->nascimento = $nascimento;
+        if ($this->nascimento !== $nascimento) {
+            $this->nascimento = $nascimento;
+            $this->flag |= DATA_MODIFIED;
+        }
     }
 
     /*
@@ -88,13 +97,14 @@ class Pessoa extends Collection
         $this->setNome($data->nome);
         $this->setGenero($data->genero);
         $this->setNascimento($data->nascimento);
+
+        $this->flag |= DATA_LOADED;
     }
 
     /*
      * Main method to write current statement on database and answear the rest request
      */
     public function do($method = 'POST', $id = 0, $data = array()) {
-
         /*
          * If is ID set, load it and setup value object
          */
@@ -119,17 +129,22 @@ class Pessoa extends Collection
             case 'POST':
                 $this->sanitize($data);
 
-                if ($id !== 0) {
-                    // Update
-                    $this->update($this->dataVO());
+                if ($this->flag & DATA_MODIFIED) {
+                    if ($id !== 0) {
+                        // Update
+                        $this->update($this->dataVO());
 
-                    return array('code' => 200, 'text' => 'Record updated successfully.');
+                        return array('code' => 200, 'text' => 'Record updated successfully.');
+                    }
+                    else {
+                        // Create
+                        $this->insert($this->dataVO());
+
+                        return array('code' => 201, 'text' => 'Record created successfully.');
+                    }
                 }
                 else {
-                    // Create
-                    $this->insert($this->dataVO());
-
-                    return array('code' => 201, 'text' => 'Record created successfully.');
+                    return array('code' => 200, 'text' => 'Nothing to do.');
                 }
                 break;
         }
