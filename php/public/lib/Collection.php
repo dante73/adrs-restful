@@ -55,7 +55,43 @@ class Collection extends DbAdmin
         parent::__construct();
 
         $this->setCollection_name($collection_name);
-        $this->setFields($this->getAllFieldsName());
+    }
+
+    /**
+     * Verifica se a coleção/tabela existe no banco de dados conectado
+     */
+    protected function table_exists() {
+        /**
+         * Efetua a operação com o banco de dados esperando por exceções
+         */
+        try {
+            /*
+             * Monta o comando SQL para testar a existência da tabela
+             */
+            $sqlcmd = 'SELECT 1 AS table_exists FROM ' . $this->getCollection_name() . ' LIMIT 1;';
+
+            /*
+             * Emite comando no servidor conectado em DbAdmin e trata o retorno
+             */
+            $conn = $this->getConnection();
+
+            $result = $conn->query($sqlcmd);
+
+            /*
+             * Se houver qualquer falha, gera um estado de exceção
+             */
+            if ($result === false) {
+                throw new Exception('Error checking table.');
+            }
+
+            return true;
+        }
+        /**
+         * Se houve falha a tabela não existe, é necessário criar
+         */
+        catch (PDOException $e) {
+            return false;
+        }
     }
 
     /*
@@ -98,7 +134,7 @@ class Collection extends DbAdmin
         return $this->fields;
     }
 
-    private function setFields($fields) {
+    protected function setFields($fields) {
         $this->fields = $fields;
     }
 
@@ -107,7 +143,7 @@ class Collection extends DbAdmin
      *
      * @return array
      */
-    private function getAllFieldsName() {
+    protected function getAllFieldsName() {
         $conn = $this->getConnection();
 
         return array_map(
