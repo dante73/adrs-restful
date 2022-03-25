@@ -35,18 +35,6 @@ class Pessoa extends Collection
              * Configura nome da tabela na classe pai
              */
             parent::__construct($this->collection_name);
-
-            /**
-             * Verifica se a coleção/tabela existe no servidor de banco de dados, se não existir cria
-             */
-            if ( ! $this->table_exists()) {
-                $this->create_table();
-            }
-
-            /**
-             * Monta a lista com todos os campos da coleção/tabela no banco de dados
-             */
-            $this->setFields($this->getAllFieldsName());
         }
         /**
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
@@ -102,7 +90,10 @@ class Pessoa extends Collection
             $this->setNome($data->nome);
         }
         if (isset($data->genero)) {
-            $this->setGenero($data->genero);
+            if ( ! preg_match('/^(?:M|F)$/', strtoupper($data->genero))) {
+                throw new Exception('O gênero informado é inválido.');
+            }
+            $this->setGenero(strtoupper($data->genero));
         }
         if (isset($data->nascimento)) {
             $this->setNascimento($data->nascimento);
@@ -139,89 +130,6 @@ class Pessoa extends Collection
     }
 
     /**
-     * Executa a tarefa solicitada pelo chamador se baseando nas informações fornecidas : método, @id e @dados
-     */
-    public function do($method = 'POST', $id = 0, $data = array()) {
-        /**
-         * Se o @id foi informado, localiza os dados na tabela e seta o objeto local com estes dados
-         */
-        if ($id !== 0) {
-            $this->setId($id);
-            $this->load();
-            $this->setDataVO();
-        }
-
-        /**
-         * Faz a operação solicitada se baseando nas informações fornecidas (principalmente o método)
-         */
-        switch ($method) {
-            case 'DELETE':
-                /**
-                 * Deletar um registro pelo @id (que foi carregado anteriormente no @load
-                 */
-                $this->delete();
-
-                return array(
-                    'code' => 200,
-                    'text' => 'Record deleted successfully.'
-                );
-                break;
-            case 'GET':
-                /**
-                 * Consulta simples, com o @id individual ou geral
-                 */
-                return ( $id !== 0 ? $this->dataVO() : $this->loadAll() );
-                break;
-            case 'POST':
-                /**
-                 * Higieniza os dados antes de qualquer operação no banco de dados
-                 */
-                $this->sanitize($data);
-
-                /**
-                 * Se informou o @id procede com a modificação
-                 */
-                if ($id !== 0) {
-                    /**
-                     * Só executa ação se houver mudança no conteúdo
-                     */
-                    if ($this->flag & DATA_MODIFIED) {
-                        /**
-                         * Edição de dados
-                         */
-                        $this->update($this->dataVO());
-
-                        return array(
-                            'code' => 200,
-                            'text' => 'Record updated successfully.',
-                            'data' => $this->dataVO()
-                        );
-                    }
-                    else {
-                        return array(
-                            'code' => 200,
-                            'text' => 'Nothing to do.',
-                            'data' => $this->dataVO()
-                        );
-                    }
-                }
-                else {
-                    /**
-                     * Criação de um novo registro no banco de dados
-                     */
-                    $this->insert($this->dataVO());
-
-                    return array(
-                        'code' => 201,
-                        'text' => 'Record created successfully.',
-                        'data' => $this->dataVO()
-                    );
-                }
-                break;
-        }
-    }
-
-    /**
      * Cria a tabela no banco de dados
      */
     protected function create_table() {
@@ -242,23 +150,14 @@ class Pessoa extends Collection
                 ."CREATE UNIQUE INDEX pessoa_id_uindex ON pessoa (id);";
 
             /**
-             * Executa comando no servidor conectado e trata o retorno
+             * Executa comando no servidor conectado e retorna o resultado
              */
             $conn = $this->getConnection();
 
-            $result = $conn->exec($sqlcmd);
-
             /**
-             * O retorno false indica que não foi possível criar a tabela
+             * Retorna o resultado ao chamador
              */
-            if ($result === false) {
-                throw new Exception('Table does not exists.');
-            }
-
-            /**
-             * Informa o chamador que criou a tabela e pode prosseguir
-             */
-            return true;
+            return $conn->exec($sqlcmd);
         }
         /*
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral

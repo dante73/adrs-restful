@@ -52,9 +52,38 @@ class Collection extends DbAdmin
      * @param $collection_name
      */
     function __construct($collection_name) {
-        parent::__construct();
+        /**
+         * Efetua a operação com o banco de dados esperando por exceções
+         */
+        try {
+            /**
+             * Prepara o ambiente de conexão com o banco de dados utilizando a classe pai
+             */
+            parent::__construct();
 
-        $this->setCollection_name($collection_name);
+            /**
+             * Configura nome da tabela na classe pai
+             */
+            $this->setCollection_name($collection_name);
+
+            /**
+             * Verifica se a coleção/tabela existe no servidor de banco de dados, se não existir cria
+             */
+            if ( ! $this->table_exists() && ! $this->create_table() ) {
+                throw new Exception('Table does not exists.');
+            }
+
+            /**
+             * Monta a lista com todos os campos da coleção/tabela no banco de dados
+             */
+            $this->setFields($this->getAllFieldsName());
+        }
+        /**
+         * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
+         */
+        catch (PDOException $e) {
+            throw new Exception('PDO Error : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -117,7 +146,7 @@ class Collection extends DbAdmin
     }
 
     /*
-     * Getter e setter dos dados da tabela
+     * Getter e setter de dados brutos da coleção/tabela
      */
     protected function getRawdata() {
         return $this->rawdata;
@@ -128,7 +157,7 @@ class Collection extends DbAdmin
     }
 
     /*
-     * Getter e setter dos campos da coleção/tabela
+     * Getter e setter de campos da coleção/tabela
      */
     private function getFields() {
         return $this->fields;
@@ -144,8 +173,14 @@ class Collection extends DbAdmin
      * @return array
      */
     protected function getAllFieldsName() {
+        /**
+         * Conexão com o banco de dados
+         */
         $conn = $this->getConnection();
 
+        /**
+         * Utiliza map para montar a lista de campos da tabela a partir do resultado captado no servidor de dados
+         */
         return array_map(
             function($arr) { return $arr['Field']; },
             $conn->query('SHOW COLUMNS FROM ' . $this->getCollection_name())->fetchAll()
@@ -153,8 +188,8 @@ class Collection extends DbAdmin
     }
 
     /*
-     *   Verifica se é um campo válido para gravação/edição e, no caso de edição, se o campo existe na tabela. Isto
-     * para evitar falhas nas operações SQL; o campo é informado no JSON, mas não existe na coleção/tabela.
+     *   Verifica se @key é um campo válido para gravação/edição e, no caso de edição, se o campo existe na tabela.
+     * Isto para evitar falhas nas operações SQL; o campo é informado no JSON, mas não existe na coleção/tabela.
      *
      * @param $key      Nome do campo para ser verificado
      * @return bool     Sinaliza para o chamador se o campo é válido/existente na coleção/tabela
@@ -196,7 +231,7 @@ class Collection extends DbAdmin
             }
             else {
                 /*
-                 * Se tudo correu bem, configura a propriedade com os dados e sinaliza o flag com o estado loaded
+                 * Se tudo correu bem, configura a propriedade com os dados e sinaliza o @flag com o estado loaded
                  */
                 $this->setRawdata($result->fetchObject());
 
@@ -458,5 +493,88 @@ class Collection extends DbAdmin
         $sqlcmd .= " WHERE `id` = '" . $this->getId() . "'";
 
         return $sqlcmd;
+    }
+
+    /**
+     * Executa a tarefa solicitada pelo chamador se baseando nas informações fornecidas : método, @id e @dados
+     */
+    public function do($method = 'POST', $id = 0, $data = array()) {
+        /**
+         * Se o @id foi informado, localiza os dados na tabela e seta o objeto local com estes dados
+         */
+        if ($id !== 0) {
+            $this->setId($id);
+            $this->load();
+            $this->setDataVO();
+        }
+
+        /**
+         * Faz a operação solicitada se baseando nas informações fornecidas (principalmente o método)
+         */
+        switch ($method) {
+            case 'DELETE':
+                /**
+                 * Deletar um registro pelo @id (que foi carregado anteriormente no @load
+                 */
+                $this->delete();
+
+                return array(
+                    'code' => 200,
+                    'text' => 'Record deleted successfully.'
+                );
+                break;
+            case 'GET':
+                /**
+                 * Consulta simples, com o @id individual ou geral
+                 */
+                return ( $id !== 0 ? $this->dataVO() : $this->loadAll() );
+                break;
+            case 'POST':
+                /**
+                 * Higieniza os dados antes de qualquer operação no banco de dados
+                 */
+                $this->sanitize($data);
+
+                /**
+                 * Se informou o @id procede com a modificação
+                 */
+                if ($id !== 0) {
+                    /**
+                     * Só executa ação se houver mudança no conteúdo
+                     */
+                    if ($this->flag & DATA_MODIFIED) {
+                        /**
+                         * Edição de dados
+                         */
+                        $this->update($this->dataVO());
+
+                        return array(
+                            'code' => 200,
+                            'text' => 'Record updated successfully.',
+                            'data' => $this->dataVO()
+                        );
+                    }
+                    else {
+                        return array(
+                            'code' => 200,
+                            'text' => 'Nothing to do.',
+                            'data' => $this->dataVO()
+                        );
+                    }
+                }
+                else {
+                    /**
+                     * Criação de um novo registro no banco de dados
+                     */
+                    $this->insert($this->dataVO());
+
+                    return array(
+                        'code' => 201,
+                        'text' => 'Record created successfully.',
+                        'data' => $this->dataVO()
+                    );
+                }
+                break;
+        }
     }
 }
