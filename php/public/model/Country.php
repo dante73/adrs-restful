@@ -9,19 +9,17 @@
 require_once 'lib/Support.php';
 require_once 'lib/Collection.php';
 
-class Pessoa extends Collection
+class Country extends Collection
 {
     /**
      * Nome da tabela do banco de dados que esta classe irá gerenciar
      */
-    private $collection_name = 'pessoa';
+    private $collection_name = 'country';
 
     /**
      * Campos da tabela que esta classe representa e que irá gerenciar
      */
-    private $nome;
-    private $genero;
-    private $nascimento;
+    private $name;
 
     /**
      * Construtor da classe
@@ -47,35 +45,13 @@ class Pessoa extends Collection
     /**
      * Getter e setters dos campos
      */
-    private function getNome() {
-        return $this->nome;
+    private function getName() {
+        return $this->name;
     }
 
-    private function setNome($nome) {
-        if ($this->nome !== $nome) {
-            $this->nome = $nome;
-            $this->flag |= DATA_MODIFIED;
-        }
-    }
-
-    private function getGenero() {
-        return $this->genero;
-    }
-
-    private function setGenero($genero) {
-        if ($this->genero !== $genero) {
-            $this->genero = $genero;
-            $this->flag |= DATA_MODIFIED;
-        }
-    }
-
-    private function getNascimento() {
-        return $this->nascimento;
-    }
-
-    private function setNascimento($nascimento) {
-        if ($this->nascimento !== $nascimento) {
-            $this->nascimento = $nascimento;
+    private function setName($name) {
+        if ($this->name !== $name) {
+            $this->name = $name;
             $this->flag |= DATA_MODIFIED;
         }
     }
@@ -86,17 +62,8 @@ class Pessoa extends Collection
      * @param   array   @data   Dados recebidos do usuário
      */
     protected function sanitize($data) {
-        if (isset($data->nome)) {
-            $this->setNome($data->nome);
-        }
-        if (isset($data->genero)) {
-            if ( ! preg_match('/^(?:M|F)$/', strtoupper($data->genero))) {
-                throw new Exception('O gênero informado é inválido.');
-            }
-            $this->setGenero(strtoupper($data->genero));
-        }
-        if (isset($data->nascimento)) {
-            $this->setNascimento($data->nascimento);
+        if (isset($data->name)) {
+            $this->setName($data->name);
         }
     }
 
@@ -106,9 +73,7 @@ class Pessoa extends Collection
     protected function dataVO() {
         return array(
             'id'            => $this->getId(),
-            'nome'          => $this->getNome(),
-            'genero'        => $this->getGenero(),
-            'nascimento'    => Support::DateToDb($this->getNascimento())
+            'name'          => $this->getName(),
         );
     }
 
@@ -124,9 +89,7 @@ class Pessoa extends Collection
         /**
          * Seta individualmente os campos locais para refletirem os dados obtidos da coleção/tabela
          */
-        $this->setNome($data->nome);
-        $this->setGenero($data->genero);
-        $this->setNascimento($data->nascimento);
+        $this->setName($data->name);
     }
 
     /**
@@ -141,13 +104,11 @@ class Pessoa extends Collection
              * Comando SQL para criar a tabela e o índice no banco de dados
              */
             $sqlcmd =
-                "CREATE TABLE pessoa ("
+                "CREATE TABLE country ("
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                . "nome VARCHAR(255) NULL,"
-                . "genero CHARACTER(1) NULL,"
-                . "nascimento DATE NULL"
-                . ") COMMENT 'Cadastro de Pessoas';"
-                ."CREATE UNIQUE INDEX pessoa_id_uindex ON pessoa (id);";
+                . "name VARCHAR(255) NULL"
+                . ") COMMENT 'Cadastro de Países';"
+                ."CREATE UNIQUE INDEX country_id_uindex ON country (id);";
 
             /**
              * Conexão com o servidor de dados
