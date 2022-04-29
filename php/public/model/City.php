@@ -9,20 +9,18 @@
 require_once 'lib/Support.php';
 require_once 'lib/Collection.php';
 
-class Country extends Collection
+class City extends Collection
 {
     /**
      * Nome da tabela do banco de dados que esta classe irá gerenciar
      */
-    private $collection_name = 'country';
+    private $collection_name = 'city';
 
     /**
      * Campos da tabela que esta classe representa e que irá gerenciar
      */
     private $name;
-    private $country_code;
-    private $country_iso_alpha2;
-    private $country_iso_alpha3;
+    private $state_id;
 
     /**
      * Construtor da classe
@@ -59,35 +57,13 @@ class Country extends Collection
         }
     }
 
-    private function getCountry_code() {
-        return $this->country_code;
+    private function getState_id() {
+        return $this->state_id;
     }
 
-    private function setCountry_code($country_code) {
-        if ($this->country_code !== $country_code) {
-            $this->country_code = $country_code;
-            $this->flag |= DATA_MODIFIED;
-        }
-    }
-
-    private function getCountry_iso_alpha2() {
-        return $this->country_iso_alpha2;
-    }
-
-    private function setCountry_iso_alpha2($country_iso_alpha2) {
-        if ($this->country_iso_alpha2 !== $country_iso_alpha2) {
-            $this->country_iso_alpha2 = $country_iso_alpha2;
-            $this->flag |= DATA_MODIFIED;
-        }
-    }
-
-    private function getCountry_iso_alpha3() {
-        return $this->country_iso_alpha3;
-    }
-
-    private function setCountry_iso_alpha3($country_iso_alpha3) {
-        if ($this->country_iso_alpha3 !== $country_iso_alpha3) {
-            $this->country_iso_alpha3 = $country_iso_alpha3;
+    private function setState_id($state_id) {
+        if ($this->state_id !== $state_id) {
+            $this->state_id = $state_id;
             $this->flag |= DATA_MODIFIED;
         }
     }
@@ -101,14 +77,8 @@ class Country extends Collection
         if (isset($data->name)) {
             $this->setName($data->name);
         }
-        if (isset($data->country_code)) {
-            $this->setCountry_code($data->country_code);
-        }
-        if (isset($data->country_iso_alpha2)) {
-            $this->setCountry_iso_alpha2($data->country_iso_alpha2);
-        }
-        if (isset($data->country_iso_alpha3)) {
-            $this->setCountry_iso_alpha3($data->country_iso_alpha3);
+        if (isset($data->state_id)) {
+            $this->setState_id($data->state_id);
         }
     }
 
@@ -117,11 +87,9 @@ class Country extends Collection
      */
     protected function dataVO() {
         return array(
-            'id'                    => $this->getId(),
-            'name'                  => $this->getName(),
-            'country_id'            => $this->getCountry_id(),
-            'country_iso_alpha2'    => $this->getCountry_iso_alpha2(),
-            'country_iso_alpha3'    => $this->getCountry_iso_alpha3(),
+            'id'            => $this->getId(),
+            'name'          => $this->getName(),
+            'state_id'      => $this->getState_id()
         );
     }
 
@@ -138,9 +106,7 @@ class Country extends Collection
          * Seta individualmente os campos locais para refletirem os dados obtidos da coleção/tabela
          */
         $this->setName($data->name);
-        $this->setCountry_code($data->country_code);
-        $this->setCountry_iso_alpha2($data->country_iso_alpha2);
-        $this->setCountry_iso_alpha3($data->country_iso_alpha3);
+        $this->setState_id($data->state_id);
     }
 
     /**
@@ -155,14 +121,12 @@ class Country extends Collection
              * Comando SQL para criar a tabela e o índice no banco de dados
              */
             $sqlcmd =
-                "CREATE TABLE country ("
+                "CREATE TABLE state ("
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 . "name VARCHAR(255) NULL,"
-                . "country_code SMALLINT NULL,"
-                . "country_iso_alpha2 VARCHAR(2) NULL,"
-                . "country_iso_alpha3 VARCHAR(3) NULL"
-                . ") COMMENT 'Cadastro de Países';"
-                ."CREATE UNIQUE INDEX country_id_uindex ON country (id);";
+                . "state_id INT NULL"
+                . ") COMMENT 'Cadastro de Cidades';"
+                ."CREATE UNIQUE INDEX city_id_uindex ON state (id);";
 
             /**
              * Conexão com o servidor de dados

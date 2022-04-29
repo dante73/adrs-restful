@@ -20,7 +20,7 @@ class State extends Collection
      * Campos da tabela que esta classe representa e que irá gerenciar
      */
     private $name;
-    private $state_id;
+    private $state_short;
     private $country_id;
 
     /**
@@ -58,13 +58,13 @@ class State extends Collection
         }
     }
 
-    private function getState_id() {
-        return $this->state_id;
+    private function getState_short() {
+        return $this->state_short;
     }
 
-    private function setState_id($state_id) {
-        if ($this->state_id !== $state_id) {
-            $this->state_id = $state_id;
+    private function setState_short($state_short) {
+        if ($this->state_short !== $state_short) {
+            $this->state_short = $state_short;
             $this->flag |= DATA_MODIFIED;
         }
     }
@@ -89,8 +89,8 @@ class State extends Collection
         if (isset($data->name)) {
             $this->setName($data->name);
         }
-        if (isset($data->state_id)) {
-            $this->setState_id($data->state_id);
+        if (isset($data->state_short)) {
+            $this->setState_short($data->state_short);
         }
         if (isset($data->country_id)) {
             $this->setCountry_id($data->country_id);
@@ -104,7 +104,7 @@ class State extends Collection
         return array(
             'id'            => $this->getId(),
             'name'          => $this->getName(),
-            'state_id'      => $this->getState_id(),
+            'state_short'   => $this->getState_short(),
             'country_id'    => $this->getCountry_id()
         );
     }
@@ -122,7 +122,7 @@ class State extends Collection
          * Seta individualmente os campos locais para refletirem os dados obtidos da coleção/tabela
          */
         $this->setName($data->name);
-        $this->setState_id($data->state_id);
+        $this->setState_short($data->state_short);
         $this->setCountry_id($data->country_id);
     }
 
@@ -141,7 +141,7 @@ class State extends Collection
                 "CREATE TABLE state ("
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 . "name VARCHAR(255) NULL,"
-                . "state_id INT NULL,"
+                . "state_short VARCHAR(2) NULL,"
                 . "country_id INT NULL"
                 . ") COMMENT 'Cadastro de Estados';"
                 ."CREATE UNIQUE INDEX state_id_uindex ON state (id);";
