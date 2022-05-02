@@ -17,6 +17,9 @@ class Model
      * Rotas válidas e suas respectivas classes de persistência na REST
      */
     const model = array(
+        'country'   => 'Country',
+        'state'     => 'State',
+        'city'      => 'City',
         'pessoa'    => 'Pessoa',
         'cliente'   => 'Cliente',
         'endereco'  => 'Endereco',

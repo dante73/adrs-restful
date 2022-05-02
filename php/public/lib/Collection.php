@@ -152,7 +152,7 @@ class Collection extends DbAdmin
         return $this->rawdata;
     }
 
-    private function setRawdata($rawdata) {
+    protected function setRawdata($rawdata) {
         $this->rawdata = $rawdata;
     }
 

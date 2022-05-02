@@ -121,12 +121,12 @@ class City extends Collection
              * Comando SQL para criar a tabela e o índice no banco de dados
              */
             $sqlcmd =
-                "CREATE TABLE state ("
+                "CREATE TABLE city ("
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 . "name VARCHAR(255) NULL,"
                 . "state_id INT NULL"
                 . ") COMMENT 'Cadastro de Cidades';"
-                ."CREATE UNIQUE INDEX city_id_uindex ON state (id);";
+                ."CREATE UNIQUE INDEX city_id_uindex ON city (id);";
 
             /**
              * Conexão com o servidor de dados
