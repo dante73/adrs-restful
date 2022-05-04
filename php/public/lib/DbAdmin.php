@@ -30,12 +30,14 @@ class DbAdmin
     private $options;
 
     /**
-     * Conexão com o banco de dados
+     * Conexão com o Banco de Dados
      */
     private $connection;
 
     /**
      * Construtor do objeto de comunicação
+     *
+     * @throws Exception
      */
     function __construct() {
         /**
@@ -51,12 +53,14 @@ class DbAdmin
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
          */
         catch (PDOException $e) {
-            throw new Exception('PDO Error : ' . $e->getMessage());
+            throw new Exception('PDO Error : ' . $e->getMessage() . '.');
         }
     }
 
     /**
      * Conecta ao banco de dados
+     *
+     * @throws Exception
      */
     private function Connect() {
         /**
@@ -78,11 +82,11 @@ class DbAdmin
         /**
          * Informa/configura as opções de acesso a biblioteca de conexão do PHP
          */
-        $this->setOptions([
-            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::ATTR_EMULATE_PREPARES   => false,
-        ]);
+        $this->setOptions(array(
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ));
 
         /**
          * Se conecta ao servidor de dados utilizando as informações configuradas
@@ -99,12 +103,14 @@ class DbAdmin
 
     /**
      * Lê as informações de acesso ao servidor de dados no arquivo .ini
+     *
+     * @throws Exception
      */
     private function takeSettings() {
         /**
          * Verifica se o arquivo .ini informado em Constants.php existe e é legível
          */
-        if ( ! is_readable(\Constants::INI_FILENAME)) {
+        if ( ! is_readable(Constants::INI_FILENAME)) {
             throw new Exception('System are not setted.');
         }
 
@@ -112,7 +118,7 @@ class DbAdmin
          * Lê as informações ali contidas e configura/informa estes dados localmente para a conexão
          */
         $this->setDbASettings(
-            parse_ini_file(\Constants::INI_FILENAME, true)
+            parse_ini_file(Constants::INI_FILENAME, true)
         );
     }
 
@@ -228,6 +234,9 @@ class DbAdmin
 
     /**
      * Com as informações lidas do arquivo .ini configura o objeto de conexão ao banco de dados
+     *
+     * @param $config
+     * @throws Exception
      */
     private function setDbASettings($config) {
         /**
@@ -243,7 +252,7 @@ class DbAdmin
                 isset($config['PDO']['dbpass'])
             ))
         {
-            throw new Exception('Cannot connect PDO');
+            throw new Exception('Insufficient settings to connect.');
         }
 
         /**
