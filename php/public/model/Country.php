@@ -1,6 +1,6 @@
 <?php
 /**
- * Classe de gerenciamento da tabela "country", serve de modelo para replicar e gerenciar outras tabelas
+ * Classe de gerenciamento da tabela "country", serve de modelo para replicar e gerenciar outras tabelas.
  *
  * @category REST_API
  * @package  adrs-restful
@@ -46,7 +46,7 @@ class Country extends Collection
     }
 
     /**
-     * Getter e setters dos campos
+     * Getter e setters dos campos da tabela aqui gerenciada
      */
     private function getName() {
         return $this->name;
@@ -161,8 +161,7 @@ class Country extends Collection
             /**
              * Comando SQL para procurar a informação no banco de dados
              */
-            $sqlcmd = "SELECT * FROM country "
-                        . "WHERE country_iso_alpha3 = :country_iso_alpha3;";
+            $sqlcmd = "SELECT * FROM country WHERE country_iso_alpha3 = :country_iso_alpha3;";
 
             /**
              * Prepara e executa o comando no servidor
@@ -177,10 +176,13 @@ class Country extends Collection
             $result = $stmt->fetchObject();
 
             /*
-             * Se tudo correu bem, configura a propriedade com os dados e sinaliza o @flag com o estado loaded
+             * Se tudo correu bem, configura a propriedade com os dados
              */
             $this->setRawdata($result);
 
+            /**
+             * Sinaliza o @flag com o estado loaded
+             */
             $this->flag |= DATA_LOADED;
 
             /**
@@ -210,7 +212,7 @@ class Country extends Collection
              ! isset($data->country_iso_alpha2) ||
              ! isset($data->country_iso_alpha3))
         {
-            throw new Exception("Missing data");
+            throw new Exception("Missing data.");
         }
 
         /**
@@ -220,11 +222,11 @@ class Country extends Collection
         $this->setCountry_code($data->country_code);
 
         if ( ! preg_match('/^[A-Z]{2}$/', $data->country_iso_alpha2)) {
-            throw new Exception("Invalid country code for alpha2");
+            throw new Exception("Invalid country code for alpha2.");
         }
         else {
             if ($this->loadByCountry_iso_alpha2($data->country_iso_alpha2)) {
-                throw new Exception("Country code alpha2 already exists");
+                throw new Exception("Country code alpha2 already exists.");
             }
             else {
                 $this->setCountry_iso_alpha2($data->country_iso_alpha2);
@@ -232,11 +234,11 @@ class Country extends Collection
         }
 
         if ( ! preg_match('/^[A-Z]{3}$/', $data->country_iso_alpha3)) {
-            throw new Exception("Invalid country code for alpha3");
+            throw new Exception("Invalid country code for alpha3.");
         }
         else {
             if ($this->loadByCountry_iso_alpha3($data->country_iso_alpha3)) {
-                throw new Exception("Country code alpha3 already exists");
+                throw new Exception("Country code alpha3 already exists.");
             }
             else {
                 $this->setCountry_iso_alpha3($data->country_iso_alpha3);
@@ -245,7 +247,7 @@ class Country extends Collection
     }
 
     /**
-     * Monta uma lista com os dados armazenados no objeto (Value Object)
+     * Monta um array com os dados armazenados no objeto (Value Object)
      */
     protected function dataVO() {
         return array(
