@@ -47,7 +47,7 @@ try {
     /*
      * Envia as informações reunidas para o Model agir de acordo com o solicitado
      */
-    $result = $model->do($method, $route['id'], $data);
+    $result = $model->doIt($method, $route['id'], $data);
 
     /*
      * Finaliza processo REST com sucesso informando o resultado

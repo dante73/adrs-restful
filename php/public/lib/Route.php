@@ -37,7 +37,7 @@ class Route
         /*
          * Verifica se informou dois valores, separados por "/".
          */
-        if (str_contains($data['r'], '/')) {
+        if (strpos($data['r'], '/') !== false) {
             /*
              * Se informou os dois valores, separa em duas variáveis : @nome e @id
              */

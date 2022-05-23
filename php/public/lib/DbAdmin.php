@@ -97,7 +97,7 @@ class DbAdmin
         );
 
         /**
-         * Informa/configura as opções de acesso a biblioteca de conexão do PHP
+         * Informa/configura as opções de acesso a biblioteca de conexão ao Banco de Dados
          */
         $this->setOptions(array(
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

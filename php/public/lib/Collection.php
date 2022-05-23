@@ -217,6 +217,25 @@ class Collection
         return (boolean)($key === 'id' || ! in_array($key, $this->getFields()));
     }
 
+    /**
+     *   Monta um array com os dados a serem usados nos statements preparados com "placeholders"
+     *
+     * @param $data
+     * @return array
+     */
+    private function bindData($data) {
+        $bindData = [];
+        foreach ($data as $key => $value) {
+            if ($this->notAValidField($key)) {
+                continue;
+            }
+
+            $bindData[":{$key}"] = $value;
+        }
+
+        return $bindData;
+    }
+
     /*
      * Carrega registro com dados da tabela a partir do @id configurado
      *
@@ -361,18 +380,30 @@ class Collection
          * Efetua a operação com o banco de dados esperando por exceções
          */
         try {
-            /*
-             * Monta o comando SQL para inserção
-             */
-            $sqlcmd = "INSERT INTO " . $this->getCollection_name();
-            $sqlcmd .= $this->getFieldsForInsertStatement($data);
-
-            /*
-             * Emite comando no servidor conectado em DbAdmin e trata o retorno
+            /**
+             * Obtém o objeto de conexão com o banco de dados
              */
             $conn = $this->getConnection();
 
-            $result = $conn->exec($sqlcmd);
+            /**
+             * Monta uma string com o comando SQL preparado para inserções na collection/tabela
+             */
+            $sqlcmd = $this->getPreparedInsertStatement($data);
+
+            /**
+             * Monta no servidor o statement com o comando preparado com "placeholders"
+             */
+            $stmt = $conn->prepare($sqlcmd);
+
+            /**
+             * Monta o array com os "placeholders" e seus respectivos valores para serem gravados de forma segura
+             */
+            $bindData = $this->bindData($data);
+
+            /**
+             * Executa comando preparado usando os valores do array @bindData
+             */
+            $result = $stmt->execute($bindData);
 
             /*
              * Se houver qualquer falha, gera um estado de exceção geral
@@ -384,23 +415,17 @@ class Collection
                 throw new Exception('Error writing new record. Zero row affected.');
             }
             else {
-                /*
+                /**
                  * Capta o @id gerado para o novo registro
                  */
                 $id = $conn->lastInsertId();
 
-                /*
+                /**
                  * Configura objeto com este @id
                  */
                 $this->setId($id);
 
-                /*
-                 * Envia ao servidor comando para efetivar dados informados no banco de dados
-                 * Só funciona quando estiver trabalhando com transactions
-                $conn->commit();
-                 */
-
-                /*
+                /**
                  * Carrega os novos dados a partir do banco de dados
                  */
                 $this->load();
@@ -424,18 +449,35 @@ class Collection
          * Efetua a operação com o banco de dados esperando por exceções
          */
         try {
-            /*
-             * Monta o comando SQL para modificações
-             */
-            $sqlcmd = "UPDATE " . $this->getCollection_name() . " SET ";
-            $sqlcmd .= $this->getFieldsForUpdateStatement($data);
-
-            /*
-             * Emite comando no servidor conectado em DbAdmin e trata o retorno
+            /**
+             * Obtém o objeto de conexão com o banco de dados
              */
             $conn = $this->getConnection();
 
-            $result = $conn->exec($sqlcmd);
+            /**
+             * Monta uma string com o comando SQL preparado para modificações na collection/tabela
+             */
+            $sqlcmd = $this->getPreparedUpdateStatement($data);
+
+            /**
+             * Monta no servidor o statement com o comando preparado com "placeholders"
+             */
+            $stmt = $conn->prepare($sqlcmd);
+
+            /**
+             * Monta o array com os "placeholders" e seus respectivos valores para serem gravados de forma segura
+             */
+            $bindData = $this->bindData($data);
+
+            /**
+             * Informa no statement qual o id será modificado
+             */
+            $bindData[":id"] = $this->getId();
+
+            /**
+             * Executa comando preparado usando os valores do array @bindData
+             */
+            $result = $stmt->execute($bindData);
 
             /*
              * Se houver qualquer falha, gera um estado de exceção geral
@@ -468,7 +510,9 @@ class Collection
      * @param   array   $data   Lista de dados com informações a serem gravadas na coleção/tabela
      * @return  string  $sqlcmd Parte do comando SQL com informações a serem concatenadas ao comando completo
      */
-    private function getFieldsForInsertStatement($data) {
+    private function getPreparedInsertStatement($data) {
+        $sqlcmd = "INSERT INTO " . $this->getCollection_name();
+
         $fields = [];
         $values = [];
 
@@ -478,38 +522,45 @@ class Collection
             }
 
             array_push($fields, $key);
-            array_push($values, $value);
+            array_push($values, ":{$key}");
         }
 
-        $sqlcmd = " (`";
+        $sqlcmd .= " (`";
         $sqlcmd .= implode("`, `", $fields);
-        $sqlcmd .= "`) VALUES ('";
-        $sqlcmd .= implode("', '", $values);
-        $sqlcmd .= "')";
+        $sqlcmd .= "`) VALUES (";
+        $sqlcmd .= implode(", ", $values);
+        $sqlcmd .= ")";
 
         return $sqlcmd;
     }
 
-    /*
-     *   Com a lista de dados informada em @data, monta parte do comando SQL que será concatenado ao comando
-     * completo para modificar informações na coleção/tabela.
+    /**
+     *   Com a lista de campos informada em @data, monta o comando SQL com os "fields" e "placeholders"
+     * que serão executados para modificar informações na coleção/tabela.
      *
-     * @param   array   $data   Lista de dados com informações a serem gravadas na coleção/tabela
-     * @return  string  $sqlcmd Parte do comando SQL com informações a serem concatenadas ao comando completo
+     * @param   array   $data   Lista de campos a serem gravadas na coleção/tabela
+     * @return  string  $sqlcmd Comando SQL com campos e "placeholders" a serem executados no servidor.
      */
-    private function getFieldsForUpdateStatement($data) {
-        $setStatement = [];
+    private function getPreparedUpdateStatement($data) {
+        /**
+         * Inicializa o comando SQL para modificação
+         */
+        $sqlcmd = "UPDATE " . $this->getCollection_name() . " SET ";
 
+        /**
+         * Monta o comando SQL se baseando na variável @data passada como parâmetro
+         */
+        $setStatement = [];
         foreach ($data as $key => $value) {
             if ($this->notAValidField($key)) {
                 continue;
             }
 
-            array_push($setStatement, "`${key}` = '${value}'");
+            array_push($setStatement, "`${key}` = :${key}");
         }
 
-        $sqlcmd = implode(", ", $setStatement);
-        $sqlcmd .= " WHERE `id` = '" . $this->getId() . "'";
+        $sqlcmd .= implode(", ", $setStatement);
+        $sqlcmd .= " WHERE `id` = :id";
 
         return $sqlcmd;
     }
@@ -517,7 +568,7 @@ class Collection
     /**
      * Executa a tarefa solicitada pelo chamador se baseando nas informações fornecidas : método, @id e @dados
      */
-    public function do($method = 'POST', $id = 0, $data = array()) {
+    public function doIt($method = 'POST', $id = 0, $data = array()) {
         /**
          * Se o @id foi informado, localiza os dados na tabela e seta o objeto local com estes dados
          */
