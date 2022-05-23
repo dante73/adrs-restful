@@ -9,6 +9,11 @@
 class DbAdmin
 {
     /**
+     * Mantém a instância do objeto
+     */
+    private static $instance = null;
+
+    /**
      * Dados para se conectar ao servidor de dados, estas informações estão configuradas no arquivo .ini
      */
     private $driver;
@@ -39,7 +44,7 @@ class DbAdmin
      *
      * @throws Exception
      */
-    function __construct() {
+    private function __construct() {
         /**
          * Efetua a operação com o banco de dados esperando por exceções
          */
@@ -55,6 +60,18 @@ class DbAdmin
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage() . '.');
         }
+    }
+
+    /**
+     * Força a classe a ser singleton
+     *
+     * @return DbAdmin|null
+     */
+    public static function getInstance() {
+        if ( ! self::$instance) {
+            self::$instance = new DbAdmin();
+        }
+        return self::$instance;
     }
 
     /**
@@ -224,7 +241,7 @@ class DbAdmin
     /**
      * Getter e setter da conexão com o banco de dados
      */
-    protected function getConnection() {
+    public function getConnection() {
         return $this->connection;
     }
 

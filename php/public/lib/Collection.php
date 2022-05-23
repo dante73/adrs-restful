@@ -19,8 +19,13 @@ define("DATA_NEW", 0x4);
 /**
  * Class Collection
  */
-class Collection extends DbAdmin
+class Collection
 {
+    /*
+     * Objeto de conexão com o banco de dados
+     */
+    private $dbAdmin;
+
     /*
      * Nome da collection para referência interna, será configurada pela classe descendente
      */
@@ -57,9 +62,9 @@ class Collection extends DbAdmin
          */
         try {
             /**
-             * Prepara o ambiente de conexão com o banco de dados utilizando a classe pai
+             * Configura a conexão com o banco de dados
              */
-            parent::__construct();
+            $this->setDbAdmin();
 
             /**
              * Configura nome da tabela na classe pai
@@ -84,6 +89,20 @@ class Collection extends DbAdmin
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Configura localmente uma instância de conexão com o banco de dados
+     */
+    protected function setDbAdmin() {
+        $this->dbAdmin = DbAdmin::getInstance();
+    }
+
+    /**
+     * Retorna a conexão local com o banco de dados
+     */
+    public function getConnection() {
+        return $this->dbAdmin->getConnection();
     }
 
     /**
