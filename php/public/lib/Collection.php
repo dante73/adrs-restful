@@ -52,6 +52,11 @@ class Collection
     private $fields;
 
     /**
+     * Método da operação
+     */
+    private $method;
+
+    /**
      * Construtor da classe, configura a lista de campos e o nome da collection que receberá da classe descendente
      *
      * @param $collection_name
@@ -187,6 +192,17 @@ class Collection
     }
 
     /*
+     * Getter e setter do método utilizado
+     */
+    private function getMethod() {
+        return $this->method;
+    }
+
+    protected function setMethod($method) {
+        $this->method = $method;
+    }
+
+    /*
      * Monta e retorna uma lista com o nome dos campos da coleção/tabela
      *
      * @return array
@@ -214,7 +230,7 @@ class Collection
      * @return bool     Sinaliza para o chamador se o campo é válido/existente na coleção/tabela
      */
     private function notAValidField($key) {
-        return (boolean)($key === 'id' || ! in_array($key, $this->getFields()));
+        return (boolean)(($key === 'id' && $this->getMethod() === 'POST') || ! in_array($key, $this->getFields()));
     }
 
     /**
@@ -570,6 +586,11 @@ class Collection
      */
     public function doIt($method = 'POST', $id = 0, $data = array()) {
         /**
+         * Informa na classe o método que está sendo utilizado para a operação
+         */
+        $this->setMethod($method);
+
+        /**
          * Se o @id foi informado, localiza os dados na tabela e seta o objeto local com estes dados
          */
         if ($id !== 0) {
@@ -633,6 +654,19 @@ class Collection
                     }
                 }
                 else {
+                    throw new Exception('To create new record use PUT method instead POST.');
+                }
+                break;
+            case 'PUT':
+                /**
+                 * Higieniza os dados antes de qualquer operação no banco de dados
+                 */
+                $this->sanitize($data);
+
+                /**
+                 * Se informou o @id procede com a modificação
+                 */
+                if ($id === 0) {
                     /**
                      * Criação de um novo registro no banco de dados
                      */
@@ -643,6 +677,9 @@ class Collection
                         'text' => 'Record created successfully.',
                         'data' => $this->dataVO()
                     );
+                }
+                else {
+                    throw new Exception('To change a record use POST method instead PUT.');
                 }
                 break;
         }

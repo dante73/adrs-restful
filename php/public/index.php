@@ -6,7 +6,7 @@
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
  *
- * POST: http://localhost:8000/cliente/     -> C -> Novo cliente
+ * PUT:  http://localhost:8000/cliente/     -> C -> Novo cliente
  * GET: http://localhost:8000/cliente/4/    -> R -> Consulta dados do cliente
  * POST: http://localhost:8000/cliente/9/   -> U -> Modifica dados do cliente
  * DELETE: http://localhost:8000/cliente/8/ -> D -> Deleta dados do cliente
@@ -40,7 +40,7 @@ try {
      */
     $data = json_decode(file_get_contents("php://input", true));
 
-    if ( ! $data) {
+    if ( ! $data && $method !== 'GET') {
         throw new Exception('Invalid JSON.');
     }
 

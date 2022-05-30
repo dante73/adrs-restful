@@ -74,6 +74,9 @@ class City extends Collection
      * @param   array   @data   Dados recebidos do usuário
      */
     protected function sanitize($data) {
+        if (isset($data->id)) {
+            $this->setId($data->id);
+        }
         if (isset($data->name)) {
             $this->setName($data->name);
         }
@@ -105,6 +108,7 @@ class City extends Collection
         /**
          * Seta individualmente os campos locais para refletirem os dados obtidos da coleção/tabela
          */
+        $this->setId($data->id);
         $this->setName($data->name);
         $this->setState_id($data->state_id);
     }
