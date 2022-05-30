@@ -3,7 +3,7 @@ version: '3.5'
 services:
   restful-app:
     build:
-      context: '.'
+      context: 'php'
       args:
         uid: ${UID}
     container_name: restful-app
