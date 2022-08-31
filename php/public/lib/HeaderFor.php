@@ -65,7 +65,7 @@ class HeaderFor
             case 'DELETE';
             case 'POST';
             case 'PUT';
-                array_merge($this->header, array(
+                $this->header = array_merge($this->header, array(
                     "Access-Control-Allow-Methods: "
                         . $this->getMethod(),
                     "Access-Control-Max-Age: 3600",
