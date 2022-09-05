@@ -1,2 +1,4 @@
 restful.ini
 frontend.brk
+frontend.vue3
+php/public/assets/*
