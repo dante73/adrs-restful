@@ -684,4 +684,34 @@ class Collection
                 break;
         }
     }
+
+    /**
+     * Grava localmente os arquivos enviados por formulário
+     */
+    public function saveSentFile($file) {
+        if ( ! isset($_FILES[$file]) || ! $_FILES[$file]) {
+            throw new Exception('File not found in POST.');
+        }
+
+        $fn = $_FILES[$file]['name'];
+        $ext = strtolower(substr($fn, strrpos($fn, '.')));
+
+        if ( ! $fn || ! $ext) {
+            throw new Exception('Invalid filename.');
+        }
+
+        $fnc = substr($fn, 0, strpos($fn, $ext) - 1);
+        $nfn = $file . '-' . $fnc . '-' . date("Y-m-d-His") . $ext;
+        $dir = './assets/' . $this->collection_name . '/';
+        $fullfn = $dir . $nfn;
+
+        if (move_uploaded_file($_FILES['imagem']['tmp_name'], $fullfn)) {
+            http_response_code(200);
+            exit(json_encode(array('filename' => $nfn)));
+        }
+        else {
+            http_response_code(403);
+            throw new Exception('Error while moving file to assets.');
+        }
+    }
 }

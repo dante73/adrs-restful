@@ -70,10 +70,10 @@ class HeaderFor
                         . $this->getMethod(),
                     "Access-Control-Max-Age: 3600",
                     "Access-Control-Allow-Headers: " .
-                    "Content-Type, " .
-                    "Access-Control-Allow-Headers, " .
-                    "Authorization, " .
-                    "X-Requested-With"
+                        "Content-Type, " .
+                        "Access-Control-Allow-Headers, " .
+                        "Authorization, " .
+                        "X-Requested-With"
                 ));
                 break;
             case 'GET';

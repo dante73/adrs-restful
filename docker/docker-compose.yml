@@ -3,7 +3,7 @@ version: '3.5'
 services:
   restful-app:
     build:
-      context: 'php'
+      context: '.'
       args:
         uid: ${UID}
     container_name: restful-app
@@ -11,7 +11,7 @@ services:
       - APACHE_RUN_USER=#${UID}
       - APACHE_RUN_GROUP=#${UID}
     volumes:
-      - .:/var/www/html
+      - ../php:/var/www/html
     ports:
       - 8000:80
     networks:

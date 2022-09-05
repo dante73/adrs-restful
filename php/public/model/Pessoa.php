@@ -22,6 +22,7 @@ class Pessoa extends Collection
     private $nome;
     private $genero;
     private $nascimento;
+    private $imagem;
 
     /**
      * Construtor da classe
@@ -80,6 +81,17 @@ class Pessoa extends Collection
         }
     }
 
+    private function getImagem() {
+        return $this->imagem;
+    }
+
+    private function setImagem($imagem) {
+        if ($this->imagem !== $imagem) {
+            $this->imagem = $imagem;
+            $this->flag |= DATA_MODIFIED;
+        }
+    }
+
     /**
      * Higieniza os dados para gravação no banco de dados
      *
@@ -98,6 +110,9 @@ class Pessoa extends Collection
         if (isset($data->nascimento)) {
             $this->setNascimento($data->nascimento);
         }
+        if (isset($data->imagem)) {
+            $this->setImagem($data->imagem);
+        }
     }
 
     /**
@@ -108,7 +123,8 @@ class Pessoa extends Collection
             'id'            => $this->getId(),
             'nome'          => $this->getNome(),
             'genero'        => $this->getGenero(),
-            'nascimento'    => Support::DateToDb($this->getNascimento())
+            'nascimento'    => Support::DateToDb($this->getNascimento()),
+            'imagem'        => $this->getImagem()
         );
     }
 
@@ -127,6 +143,7 @@ class Pessoa extends Collection
         $this->setNome($data->nome);
         $this->setGenero($data->genero);
         $this->setNascimento($data->nascimento);
+        $this->setImagem($data->imagem);
     }
 
     /**
@@ -145,7 +162,8 @@ class Pessoa extends Collection
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 . "nome VARCHAR(255) NULL,"
                 . "genero CHARACTER(1) NULL,"
-                . "nascimento DATE NULL"
+                . "nascimento DATE NULL,"
+                . "imagem VARCHAR(255) NULL"
                 . ") COMMENT 'Cadastro de Pessoas';"
                 ."CREATE UNIQUE INDEX pessoa_id_uindex ON pessoa (id);";
 
@@ -165,5 +183,12 @@ class Pessoa extends Collection
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Salva os arquivos enviados por formulário
+     */
+    public function saveFile() {
+        $this->saveSentFile('imagem');
     }
 }

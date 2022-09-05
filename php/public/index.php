@@ -16,6 +16,8 @@ require_once 'lib/Route.php';
 require_once 'lib/Model.php';
 require_once 'lib/HeaderFor.php';
 
+$request_header = getallheaders();
+
 try {
     /*
      * Pega e consiste informações necessárias de @_REQUEST para prosseguir
@@ -36,9 +38,33 @@ try {
     $header->putHeaders();
 
     /*
+     * Um arquivo foi enviado pelo request
+     */
+    if ($method === 'POST' &&
+        isset($request_header['Content-Type']) &&
+        strpos($request_header['Content-Type'], 'multipart/form-data') !== false) {
+
+        /**
+         * Verifica se o POST está completo
+         */
+        if ( ! isset($_FILES) || ! sizeof($_FILES) > 0) {
+            throw new Exception('Invalid POST.');
+        }
+
+        /**
+         * O model movimenta o arquivo enviado e retorna o resultado
+         */
+        $model->saveFile();
+    }
+
+    /*
      * Capta todos os dados passados por JSON e verifica (aqui superficialmente) se estão válidos
      */
     $data = json_decode(file_get_contents("php://input", true));
+
+    file_put_contents(
+        '/tmp/adrs-restful-log.log',
+        __FILE__ . " Message: " . print_r($data, true) . "\n");
 
     if ( ! $data && $method !== 'GET') {
         throw new Exception('Invalid JSON.');
