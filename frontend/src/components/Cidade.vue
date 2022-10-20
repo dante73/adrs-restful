@@ -5,7 +5,7 @@
         <div class="columns" v-if=" ! cidades.length > 0">
           <div class="column">&nbsp;</div>
           <div class="column has-text-centered">
-              <img src="@/assets/6.gif" alt="" />
+              <!-- <img :src="require('./assets/img/green_spinner.gif')" alt="" />-->
           </div>
           <div class="column">&nbsp;</div>
         </div>

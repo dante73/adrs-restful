@@ -1,6 +1,6 @@
 <?php
 /**
- * Classe de gerenciamento da tabela "pessoa", serve de modelo para replicar e gerenciar outras tabelas
+ * Classe de gerenciamento da tabela "contato", serve de modelo para replicar e gerenciar outras tabelas
  *
  * @category REST_API
  * @package  adrs-restful
@@ -9,18 +9,19 @@
 require_once 'lib/Support.php';
 require_once 'lib/Collection.php';
 
-class City extends Collection
+class Contato extends Collection
 {
     /**
      * Nome da tabela do banco de dados que esta classe irá gerenciar
      */
-    private $collection_name = 'city';
+    private $collection_name = 'contato';
 
     /**
      * Campos da tabela que esta classe representa e que irá gerenciar
      */
-    private $name;
-    private $state_id;
+    private $pessoa;
+    private $tipo;
+    private $valor;
 
     /**
      * Construtor da classe
@@ -46,24 +47,35 @@ class City extends Collection
     /**
      * Getter e setters dos campos
      */
-    private function getName() {
-        return $this->name;
+    private function getPessoa() {
+        return $this->pessoa;
     }
 
-    private function setName($name) {
-        if ($this->name !== $name) {
-            $this->name = $name;
+    private function setPessoa($pessoa) {
+        if ($this->pessoa !== $pessoa) {
+            $this->pessoa = $pessoa;
             $this->flag |= DATA_MODIFIED;
         }
     }
 
-    private function getState_id() {
-        return $this->state_id;
+    private function getTipo() {
+        return $this->tipo;
     }
 
-    private function setState_id($state_id) {
-        if ($this->state_id !== $state_id) {
-            $this->state_id = $state_id;
+    private function setTipo($tipo) {
+        if ($this->tipo !== $tipo) {
+            $this->tipo = $tipo;
+            $this->flag |= DATA_MODIFIED;
+        }
+    }
+
+    private function getValor() {
+        return $this->valor;
+    }
+
+    private function setValor($valor) {
+        if ($this->valor !== $valor) {
+            $this->valor = $valor;
             $this->flag |= DATA_MODIFIED;
         }
     }
@@ -74,14 +86,14 @@ class City extends Collection
      * @param   array   @data   Dados recebidos do usuário
      */
     protected function sanitize($data) {
-        if (isset($data->id)) {
-            $this->setId($data->id);
+        if (isset($data->pessoa)) {
+            $this->setPessoa($data->pessoa);
         }
-        if (isset($data->name)) {
-            $this->setName($data->name);
+        if (isset($data->tipo)) {
+            $this->setTipo($data->tipo);
         }
-        if (isset($data->state_id)) {
-            $this->setState_id($data->state_id);
+        if (isset($data->valor)) {
+            $this->setValor($data->valor);
         }
     }
 
@@ -90,9 +102,10 @@ class City extends Collection
      */
     protected function dataVO() {
         return array(
-            'id'            => $this->getId(),
-            'name'          => $this->getName(),
-            'state_id'      => $this->getState_id()
+            'id'     => $this->getId(),
+            'pessoa' => $this->getPessoa(),
+            'tipo'   => $this->getTipo(),
+            'valor'  => $this->getValor(),
         );
     }
 
@@ -108,9 +121,9 @@ class City extends Collection
         /**
          * Seta individualmente os campos locais para refletirem os dados obtidos da coleção/tabela
          */
-        $this->setId($data->id);
-        $this->setName($data->name);
-        $this->setState_id($data->state_id);
+        $this->setPessoa($data->pessoa);
+        $this->setTipo($data->tipo);
+        $this->setValor($data->valor);
     }
 
     /**
@@ -125,12 +138,13 @@ class City extends Collection
              * Comando SQL para criar a tabela e o índice no banco de dados
              */
             $sqlcmd =
-                "CREATE TABLE city ("
+                "CREATE TABLE contato ("
                 . "id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                . "name VARCHAR(255) NULL,"
-                . "state_id INT NULL"
-                . ") COMMENT 'Cadastro de Cidades';"
-                ."CREATE UNIQUE INDEX city_id_uindex ON city (id);";
+                . "pessoa INT UNSIGNED NOT NULL,"
+                . "tipo CHARACTER(1) NULL,"
+                . "valor VARCHAR(255) NULL"
+                . ") COMMENT 'Cadastro de Dados de Contato de Pessoas';"
+                ."CREATE UNIQUE INDEX contato_id_uindex ON contato (id);";
 
             /**
              * Conexão com o servidor de dados
@@ -150,20 +164,19 @@ class City extends Collection
         }
     }
 
-    public function loadAllByStateId($params)
-    {
+    public function loadAllByPersonId($params) {
         /**
-         * O primeiro parâmetro após o nome do método deve ser o id do estado
+         * O primeiro parâmetro após o nome do método deve ser o id da pessoa
          */
         $pid = $params[0];
 
-        if (!preg_match('/^\d+$/', $pid)) {
+        if (! preg_match('/^\d+$/', $pid)) {
             throw new Exception('Invalid parameter!');
         }
 
         $pid = filter_var($pid, FILTER_SANITIZE_NUMBER_INT);
 
-        if (!$pid) {
+        if ( ! $pid) {
             throw new Exception('Invalid parameter!');
         }
 
@@ -174,7 +187,7 @@ class City extends Collection
             /*
              * Monta o comando SQL
              */
-            $sqlcmd = 'SELECT * FROM ' . $this->getCollection_name() . ' WHERE state_id = \'' . $pid . '\' ORDER BY name;';
+            $sqlcmd = 'SELECT * FROM ' . $this->getCollection_name() . ' WHERE pessoa = \'' . $pid . '\' ORDER BY tipo;';
 
             /*
              * Emite comando no servidor conectado em DbAdmin e trata o retorno
@@ -188,19 +201,23 @@ class City extends Collection
              */
             if ($result === false) {
                 throw new Exception('Error loading data.');
-            } else if ($result->rowCount() === 0) {
+            }
+            else if ($result->rowCount() === 0) {
                 throw new Exception('Record not found.');
-            } else {
+            }
+            else {
                 /*
                  * Se tudo correu bem, retorna as informações obtidas para o chamador
                  */
                 return $result->fetchAll();
             }
-        } /*
+        }
+            /*
              * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
              */
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
+
     }
 }

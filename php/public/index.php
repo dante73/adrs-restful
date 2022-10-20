@@ -29,6 +29,13 @@ try {
      */
     $model = Model::takeModel($route['name']);
 
+    /**
+     * Verifica se foi informada uma operação para ser executada e se esta operação existe
+     */
+    if ($route['op'] !== '' && ! method_exists($model, $route['op'])) {
+        throw new Exception('Invalid operation.');
+    }
+
     /*
      * Configura o ambiente de comunicação HTTP, de acordo com o método solicitado
      */
@@ -38,14 +45,14 @@ try {
     $header->putHeaders();
 
     /*
-     * Um arquivo foi enviado pelo request
+     * Arquivo enviado pelo request
      */
     if ($method === 'POST' &&
         isset($request_header['Content-Type']) &&
         strpos($request_header['Content-Type'], 'multipart/form-data') !== false) {
 
         /**
-         * Verifica se o POST está completo
+         * Verifica se o POST do arquivo está completo
          */
         if ( ! isset($_FILES) || ! sizeof($_FILES) > 0) {
             throw new Exception('Invalid POST.');
@@ -62,18 +69,27 @@ try {
      */
     $data = json_decode(file_get_contents("php://input", true));
 
-    file_put_contents(
-        '/tmp/adrs-restful-log.log',
-        __FILE__ . " Message: " . print_r($data, true) . "\n");
-
-    if ( ! $data && $method !== 'GET') {
+    if ( ($method === 'PUT' || $method === 'POST') && ! $data) {
         throw new Exception('Invalid JSON.');
     }
 
-    /*
-     * Envia as informações reunidas para o Model agir de acordo com o solicitado
+    /**
+     * Verifica se foi informada uma operação para ser executada
      */
-    $result = $model->doIt($method, $route['id'], $data);
+    if ($route['op'] !== '') {
+        /**
+         * Executa a operação no model enviando os parâmetros passados na URL
+         */
+        $action = $route['op'];
+
+        $result = $model->$action($route['params']);
+    }
+    else {
+        /*
+         * Envia as informações reunidas para o Model agir de acordo com o solicitado
+         */
+        $result = $model->doIt($method, $route['id'], $data);
+    }
 
     /*
      * Finaliza processo REST com sucesso informando o resultado

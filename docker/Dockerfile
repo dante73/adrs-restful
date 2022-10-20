@@ -29,7 +29,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
 # Cors
-RUN echo "<Directory \"${APACHE_DOCUMENT_ROOT}\">\n        Header set Access-Control-Allow-Origin \"*\"\n        Header set Access-Control-Allow-Headers \"Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With\"\n</Directory>\n" > /etc/apache2/conf-available/cors.conf
+RUN echo "<Directory \"${APACHE_DOCUMENT_ROOT}\">\n        Header set Access-Control-Allow-Origin \"*\"\n        Header set Access-Control-Allow-Methods \"*\"\n        Header set Access-Control-Allow-Headers \"Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With\"\n</Directory>\n" > /etc/apache2/conf-available/cors.conf
 RUN ln -sf /etc/apache2/conf-available/cors.conf /etc/apache2/conf-enabled/
 
 # 3. mod_rewrite for URL rewrite and mod_headers

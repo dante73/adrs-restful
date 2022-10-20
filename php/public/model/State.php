@@ -35,6 +35,11 @@ class State extends Collection
              * Configura nome da tabela na classe pai
              */
             parent::__construct($this->collection_name);
+
+            /**
+             * Configura a ordem primária dos dados
+             */
+            $this->setPrimary_order('name');
         }
         /**
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
@@ -164,6 +169,105 @@ class State extends Collection
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
          */
         catch (PDOException $e) {
+            throw new Exception('PDO Error : ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * loadAllWithCities monta um array com todos os estados da federação, com uma propriedade array com todas as cidades
+     *
+     * @return array com os dados solicitados
+     */
+    public function loadAllWithCities() {
+        /*
+         * Efetua a operação com o banco de dados esperando por exceções
+         */
+        try {
+            /*
+             * Monta o comando SQL
+             */
+            $sqlcmd = 'SELECT '
+                    . 'state.id AS sid,'
+                    . 'city.id AS cid,'
+                    . 'state.name AS state_name,'
+                    . 'city.name AS city_name,'
+                    . 'state_short,'
+                    . 'state_id,'
+                    . 'country_id '
+                . 'FROM state '
+                . 'LEFT JOIN city ON(state.id = city.state_id) '
+                . 'ORDER BY state.name, city.name';
+
+            /*
+             * Emite comando no servidor conectado em DbAdmin e trata o retorno
+             */
+            $conn = $this->getConnection();
+
+            $result = $conn->query($sqlcmd);
+
+            /*
+             * Se houver qualquer falha, gera um estado de exceção
+             */
+            if ($result === false) {
+                throw new Exception('Error loading data.');
+            }
+            else if ($result->rowCount() === 0) {
+                throw new Exception('Record not found.');
+            }
+            else {
+
+                $states = [];
+                $cities = [];
+
+                $state = [];
+                $state_id = 0;
+
+                /**
+                 * Monta o array de estados com suas respectivas cidades
+                 */
+                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                    if ($state_id != $row['state_id'] && sizeof($cities) > 0) {
+                        $states[] = array(
+                            'id' => $state['sid'],
+                            'name' => $state['state_name'],
+                            'state_short' => $state['state_short'],
+                            'country_id' => $state['country_id'],
+                            'cities' => $cities
+                        );
+
+                        $cities = [];
+                    }
+
+                    $cities[] = array(
+                        'id' => $row['cid'],
+                        'name' => $row['city_name'],
+                        'state_id' => $row['state_id']
+                    );
+
+                    $state = $row;
+                    $state_id = $row['state_id'];
+                }
+
+                /**
+                 * Anexa o último estado lido pelo fetch
+                 */
+                if (sizeof($cities) > 0) {
+                    $states[] = array(
+                        'id' => $state['sid'],
+                        'name' => $state['state_name'],
+                        'state_short' => $state['state_short'],
+                        'country_id' => $state['country_id'],
+                        'cities' => $cities
+                    );
+                }
+
+                return $states;
+            }
+        }
+        catch (PDOException $e) {
+            /*
+             * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
+             */
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
     }

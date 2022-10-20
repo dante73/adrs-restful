@@ -32,6 +32,11 @@ class Collection
     private $collection_name;
 
     /*
+     * Campo que configura a ordem do relatório
+     */
+    private $primary_order;
+
+    /*
      * Id do registro, é o único campo que é gerenciado aqui
      */
     private $id;
@@ -161,12 +166,23 @@ class Collection
     /*
      * Getter e setter do nome da coleção/tabela
      */
-    private function getCollection_name() {
+    protected function getCollection_name() {
         return $this->collection_name;
     }
 
     private function setCollection_name($collection_name) {
         $this->collection_name = $collection_name;
+    }
+
+    /*
+     * Getter e setter da ordem primária
+     */
+    protected function getPrimary_order() {
+        return $this->primary_order;
+    }
+
+    protected function setPrimary_order($primary_order) {
+        $this->primary_order = $primary_order;
     }
 
     /*
@@ -354,6 +370,10 @@ class Collection
              * Monta o comando SQL
              */
             $sqlcmd = 'SELECT * FROM ' . $this->getCollection_name();
+
+            if (isset($this->primary_order)) {
+                $sqlcmd .= ' ORDER BY ' . $this->getPrimary_order();
+            }
 
             /*
              * Emite comando no servidor conectado em DbAdmin e trata o retorno
@@ -584,7 +604,7 @@ class Collection
     /**
      * Executa a tarefa solicitada pelo chamador se baseando nas informações fornecidas : método, @id e @dados
      */
-    public function doIt($method = 'POST', $id = 0, $data = array()) {
+    public function doIt($method = 'POST', $id = 0, $data = array(), $op = '') {
         /**
          * Informa na classe o método que está sendo utilizado para a operação
          */

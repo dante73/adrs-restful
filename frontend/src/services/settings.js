@@ -3,9 +3,12 @@ const settings = {
     restapi: 'http://localhost:8000/',
     backend: 'http://localhost:8000/',
     locale: 'pt-br',
-    maxImageSize: 1000000,
     regexp: {
-        limpa_valor: new RegExp(/[-./]/g)
+        limpa_valor: new RegExp(/[-./]/g),
+        limpa_telefone: new RegExp(/[() -]/g),
+        valida_telefone: new RegExp(/^\d{10}$/),
+        valida_celular: new RegExp(/^\d{11}$/),
+        valida_email: new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
     },
     format: {
         date: 'DD/MM/YYYY',
@@ -22,15 +25,20 @@ const settings = {
         celular: '(##) # ####-####',
         telefone: '(##) ####-####'
     },
+    config: {
+        maxImageSize: 1000000,
+        toastErrorTimeout: 5000,
+        toastSuccessTimeout: 3000,
+    },
     tipos: {
         acesso: [
             { text: 'Ativo', value: 'A' },
             { text: 'Inativo', value: 'I' }
         ],
         contatos: [
-            { text: 'Telefone Fixo', value: 'fixo' },
-            { text: 'Telefone Celular', value: 'celular' },
-            { text: 'Email', value: 'email' }
+            { text: 'Telefone Fixo', value: 'F' },
+            { text: 'Telefone Celular', value: 'C' },
+            { text: 'Email', value: 'E' }
         ],
         documentos: [
             { text: 'Cadastro de Pessoas Físicas', value: 'CPF' },

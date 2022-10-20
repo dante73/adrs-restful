@@ -34,34 +34,59 @@ class Route
             throw new Exception('Unknown route.');
         }
 
+        /**
+         * Array de parâmetros
+         */
+        $arr = [];
+
         /*
-         * Verifica se informou dois valores, separados por "/".
+         * Verifica se informou mais que um parâmetro, separados por "/".
          */
         if (strpos($data['r'], '/') !== false) {
             /*
-             * Se informou os dois valores, separa em duas variáveis : @nome e @id
+             * Se informou mais valores, separa para verificação no array @arr (decladado fora do if)
              */
             $arr = explode('/', $data['r']);
 
             /*
-             * Filtra os dois valores para checagem do conteúdo
+             * Filtra o primeiro valor que deve ser o nome da rota
              */
-            $name = filter_var($arr[0], FILTER_SANITIZE_STRING);
-            $id = filter_var($arr[1], FILTER_SANITIZE_NUMBER_INT);
+            $name = filter_var(array_shift($arr), FILTER_SANITIZE_STRING);
 
-            /*
-             * Verifica se o @id é um número inteiro válido
+            /**
+             * Próximo parâmetro
              */
-            if ( ! $id) {
-                throw new Exception('Invalid data.');
+            $next = array_shift($arr);
+
+            /**
+             * Verifica se o segundo parâmetro tem somente dígitos com o ID
+             */
+            if (preg_match('/^\d+$/', $next)) {
+                $id = filter_var($next, FILTER_SANITIZE_NUMBER_INT);
+                $op = '';
+
+                /*
+                 * Verifica se o @id é um número inteiro válido
+                 */
+                if ( ! $id) {
+                    throw new Exception('Invalid data.');
+                }
+            }
+            else {
+                /**
+                 * Se não é um ID, uma operação foi solicitada
+                 */
+                $id = 0;
+                $op = $next;
             }
         }
         else {
             /*
-             * Se não houver dois valores trata como um só, filtra a string @name e fixa o @id em zero
+             * Se não houver dois valores trata como um só, filtra a string @name, fixa o @id em zero e a @op em vazio
              */
             $name = filter_var($data['r'], FILTER_SANITIZE_STRING);
             $id = 0;
+            $op = '';
         }
 
         /*
@@ -79,11 +104,16 @@ class Route
         }
 
         /*
-         * Se tudo estiver ok retorna array com o @name da rota e o @id
+         * Se tudo estiver ok retorna array com o @name da rota, o @id ou a @op (operação) a ser executada
          */
         return array(
             'name' => $name,
-            'id' => $id
+            'id' => $id,
+            'op' => $op,
+            /**
+             * O restante dos parâmetros é atribuído a @params e será passado ao método chamado
+             */
+            'params' => $arr
         );
     }
 }

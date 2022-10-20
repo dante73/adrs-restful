@@ -36,6 +36,11 @@ class Pessoa extends Collection
              * Configura nome da tabela na classe pai
              */
             parent::__construct($this->collection_name);
+
+            /**
+             * Configura o campo que será usado para indexar os dados
+             */
+            $this->setPrimary_order('nome');
         }
         /**
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral

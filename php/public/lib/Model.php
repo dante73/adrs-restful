@@ -21,9 +21,10 @@ class Model
         'state'     => 'State',
         'city'      => 'City',
         'pessoa'    => 'Pessoa',
-        'cliente'   => 'Cliente',
+        'contato'   => 'Contato',
+        'documento' => 'Documento',
         'endereco'  => 'Endereco',
-        'documento' => 'Documento'
+        'cliente'   => 'Cliente'
     );
 
     /**

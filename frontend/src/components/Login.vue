@@ -8,7 +8,7 @@
           <b-card class="border-success shadow-lg" fluid>
 
             <b-card-header class="bg-white">
-                <b-img :src="require('../assets/logo_white_mini.png')" width="100%" fluid></b-img>
+                <b-img :src="require('../assets/img/logo_white_mini.png')" width="100%" fluid></b-img>
             </b-card-header>
 
             <b-card-body>

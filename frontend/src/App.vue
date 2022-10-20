@@ -6,7 +6,7 @@
       <!-- Sidebar with logo, menu and company information  -->
       <b-container id="leftContainer">
         <b-sidebar id="sidebar" @change="sidebarChangesVisibility" type="light" no-header shadow>
-          <b-img :src="require('./assets/logo.png')" fluid></b-img>
+          <b-img :src="require('./assets/img/logo.png')" fluid></b-img>
           <b-nav class="mb-3">
             <b-nav-item active>
               <b-icon icon="shop"></b-icon>
@@ -33,12 +33,12 @@
 
         <!-- ADRs Logo -->
         <b-navbar-brand href="#">
-          <b-img :src="require('./assets/logo_white_mini.png')" width="100%"></b-img>
+          <b-img :src="require('./assets/img/logo_white_mini.png')" width="100%"></b-img>
         </b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-        <b-collapse id="nav-collapse" is-nav>
+        <b-collapse id="nav-collapse" is-nav class="pb-0 pt-4">
 
           <!-- Horizontal Menu -->
           <b-navbar-nav>
