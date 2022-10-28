@@ -59,7 +59,7 @@
                                             @click="criar"
                                             variant="outline-success"
                                             size="sm"
-                                    >Adicionar um Novo Contato</b-button>
+                                    >Adicionar {{ contatos.length > 0 ? "um Novo " : ""}}Contato</b-button>
                                 </b-col>
                                 <b-col md="6" align="right">
                                     <CloseButtom size="sm" />
@@ -77,7 +77,7 @@
 
 <script>
     import Form from './Form.vue';
-    import CloseButtom from "@/components/app/CloseButtom";
+    import CloseButtom from "@/components/app/frontpage/CloseButtom";
 
     const emptyForm = {
         'id': 0,

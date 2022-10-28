@@ -5,7 +5,8 @@ import ls from 'local-storage';
 Vue.use(Vuex);
 
 const state = {
-  isLogged: !!ls('token')
+  /* O ls atua como "get" quando não é informado o segundo valor */
+  isLogged: !! ls('token')
 };
 
 const mutations = {

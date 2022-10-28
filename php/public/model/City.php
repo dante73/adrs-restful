@@ -150,7 +150,7 @@ class City extends Collection
         }
     }
 
-    public function loadAllByStateId($params)
+    public function loadAllByStateId($params, $data = [])
     {
         /**
          * O primeiro parâmetro após o nome do método deve ser o id do estado

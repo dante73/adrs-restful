@@ -164,7 +164,7 @@ class Documento extends Collection
         }
     }
 
-    public function loadAllByPersonId($params) {
+    public function loadAllByPersonId($params, $data = []) {
         /**
          * O primeiro parâmetro após o nome do método deve ser o id da pessoa
          */

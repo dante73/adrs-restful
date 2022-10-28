@@ -1,9 +1,11 @@
 <template>
+
     <b-button
             @click="dismissFormData"
             variant="warning"
             :size="size"
     >{{ caption || "Fechar" }}</b-button>
+
 </template>
 
 <script>

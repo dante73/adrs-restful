@@ -10,7 +10,8 @@
                 @close="handleClose"
                 no-close-on-backdrop
                 hide-footer
-                header-bg-variant="warning"
+                header-bg-variant="success"
+                header-text-variant="light"
         >
             <b-row>
                 <b-col md="12" class="p-0 m-0">

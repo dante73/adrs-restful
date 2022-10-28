@@ -17,14 +17,15 @@ class Model
      * Rotas válidas e suas respectivas classes de persistência na REST
      */
     const model = array(
-        'country'   => 'Country',
-        'state'     => 'State',
+        'acesso'    => 'Acesso',
         'city'      => 'City',
-        'pessoa'    => 'Pessoa',
+        'cliente'   => 'Cliente',
         'contato'   => 'Contato',
+        'country'   => 'Country',
         'documento' => 'Documento',
         'endereco'  => 'Endereco',
-        'cliente'   => 'Cliente'
+        'pessoa'    => 'Pessoa',
+        'state'     => 'State'
     );
 
     /**

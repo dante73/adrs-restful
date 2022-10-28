@@ -24,14 +24,14 @@
           <b-col md="9" class="p-0 m-0">
             <b-container fluid class="p-0 m-0">
 
-              <b-tabs small>
+              <b-tabs small fill>
 
                 <b-tab title="Principal">
                   <b-card-group>
-                    <b-card no-body style="min-height: 240px; border-top: none;">
+                    <b-card no-body style="border-top: none;">
                       <b-card-body class="p-0 m-0">
 
-                        <b-container fluid class="p-0 m-0 h-100">
+                        <b-container fluid class="p-0 m-0" style="height: 210px;">
 
                           <b-row class="p-0 pl-1 pt-1 small">
                             <b-col md="3">
@@ -40,7 +40,7 @@
                                       class="pt-0"
                                       label="Data de Nascimento"
                                       label-for="input-birthday"
-                                      label-class="bg-light text-center"
+                                      label-class="bg-light text-center p-0 m-0"
                               >
                                 <b-form-input
                                         id="input-birthday"
@@ -61,7 +61,7 @@
                                       v-if="showEditingControllers()"
                                       label="Gênero"
                                       label-for="radio-gender"
-                                      label-class="bg-light text-center"
+                                      label-class="bg-light text-center p-0 m-0"
                               >
                                 <b-form-radio-group
                                         id="radio-gender"
@@ -81,7 +81,7 @@
                                       v-else
                                       label="Gênero"
                                       label-for="radio-gender"
-                                      label-class="bg-light text-center"
+                                      label-class="bg-light text-center p-0 m-0"
                               >
                                 <span class="btn btn-sm bg-info text-light w-100">
                                   {{ form.genero === 'M' ? 'Masculino' : 'Feminino'}}
@@ -97,7 +97,7 @@
                                       class="pt-0"
                                       label="Nome"
                                       label-for="input-name"
-                                      label-class="bg-light text-center"
+                                      label-class="bg-light text-center p-0 m-0"
                               >
                                 <b-form-input
                                         id="input-name"
@@ -118,7 +118,7 @@
                                       class="pt-0"
                                       label="Arquivo de Foto"
                                       label-for="input-file"
-                                      label-class="bg-light text-center">
+                                      label-class="bg-light text-center p-0 m-0">
                                 <b-input-group>
                                   <b-form-file
                                           id="input-file"
@@ -136,70 +136,72 @@
                             </b-col>
                           </b-row>
 
-                          <b-row class="p-1 small" v-if="showEditingControllers()">
-                            <b-col md="12">
-                              <b-card-group class="shadow-lg">
-                                <b-card no-body class="bg-light">
-
-                                  <b-card-body v-if='localState==="criando"' class="p-1 m-1 bg-light">
-                                    <b-row>
-                                      <b-col md="6">
-                                        <b-button
-                                                @click="saveFormData"
-                                                variant="outline-danger"
-                                                size="sm"
-                                        >Gravar o Novo Registro</b-button>
-                                      </b-col>
-                                      <b-col md="6" align="right">
-                                        <CloseButtom size="sm" caption="Abandonar" />
-                                      </b-col>
-                                    </b-row>
-                                  </b-card-body>
-
-                                  <b-card-body v-else-if='localState=="editando"' class="p-1 m-1 bg-light">
-                                    <b-row>
-                                      <b-col md="6">
-                                        <b-button
-                                                @click="saveFormData"
-                                                variant="outline-danger"
-                                                size="sm"
-                                        >Gravar Alterações</b-button>
-                                      </b-col>
-                                      <b-col md="6" align="right">
-                                        <CloseButtom size="sm" caption="Abandonar" />
-                                      </b-col>
-                                    </b-row>
-                                  </b-card-body>
-
-                                  <b-card-body v-else-if='localState=="apagando"' class="p-1 m-1 bg-light">
-                                    <b-row>
-                                      <b-col md="6">
-                                        <b-button
-                                                @click="deleteFormData"
-                                                variant="outline-danger"
-                                                size="sm"
-                                        >Apagar</b-button>
-                                      </b-col>
-                                      <b-col md="6" align="right">
-                                        <CloseButtom size="sm" caption="Abandonar" />
-                                      </b-col>
-                                    </b-row>
-                                  </b-card-body>
-
-                                  <b-card-body v-else class="p-1 m-1 bg-light">
-                                    <b-row>
-                                      <b-col md="12" align="right">
-                                        <CloseButtom size="sm" />
-                                      </b-col>
-                                    </b-row>
-                                  </b-card-body>
-
-                                </b-card>
-                              </b-card-group>
-                            </b-col>
-                          </b-row>
-
                         </b-container>
+
+                        <!-- Toolbar -->
+                        <b-row class="p-1 pt-3 small" v-if="showEditingControllers()">
+                          <b-col md="12">
+                            <b-card-group class="shadow-lg">
+                              <b-card no-body class="bg-light">
+
+                                <b-card-body v-if='localState==="criando"' class="p-1 m-1 bg-light">
+                                  <b-row>
+                                    <b-col md="6">
+                                      <b-button
+                                              @click="saveFormData"
+                                              variant="outline-danger"
+                                              size="sm"
+                                      >Gravar o Novo Registro</b-button>
+                                    </b-col>
+                                    <b-col md="6" align="right">
+                                      <CloseButtom size="sm" caption="Abandonar" />
+                                    </b-col>
+                                  </b-row>
+                                </b-card-body>
+
+                                <b-card-body v-else-if='localState=="editando"' class="p-1 m-1 bg-light">
+                                  <b-row>
+                                    <b-col md="6">
+                                      <b-button
+                                              @click="saveFormData"
+                                              variant="outline-danger"
+                                              size="sm"
+                                      >Gravar Alterações</b-button>
+                                    </b-col>
+                                    <b-col md="6" align="right">
+                                      <CloseButtom size="sm" caption="Abandonar" />
+                                    </b-col>
+                                  </b-row>
+                                </b-card-body>
+
+                                <b-card-body v-else-if='localState=="apagando"' class="p-1 m-1 bg-light">
+                                  <b-row>
+                                    <b-col md="6">
+                                      <b-button
+                                              @click="deleteFormData"
+                                              variant="outline-danger"
+                                              size="sm"
+                                      >Apagar</b-button>
+                                    </b-col>
+                                    <b-col md="6" align="right">
+                                      <CloseButtom size="sm" caption="Abandonar" />
+                                    </b-col>
+                                  </b-row>
+                                </b-card-body>
+
+                                <b-card-body v-else class="p-1 m-1 bg-light">
+                                  <b-row>
+                                    <b-col md="12" align="right">
+                                      <CloseButtom size="sm" />
+                                    </b-col>
+                                  </b-row>
+                                </b-card-body>
+
+                              </b-card>
+                            </b-card-group>
+                          </b-col>
+                        </b-row>
+                        <!-- End of Toolbar -->
 
                       </b-card-body>
                     </b-card>
@@ -243,10 +245,14 @@
                 </b-tab>
                 <!-- End of enderecos component -->
 
-                <b-tab title="Login">
-                  <b-card no-body style="min-height: 240px; border-top: none;">
-                    &nbsp;
-                  </b-card>
+                <b-tab title="Acesso">
+                  <b-card-group>
+                    <b-card no-body style="min-height: 240px; border-top: none;">
+                      <b-card-body class="p-0 m-0">
+                        <Acessos :pessoaId="form.id" :pessoaState="localState" />
+                      </b-card-body>
+                    </b-card>
+                  </b-card-group>
                 </b-tab>
 
               </b-tabs>
@@ -263,16 +269,18 @@
 <script>
 import axios from 'axios';
 
+import Acessos from './acessos/Index';
 import Contatos from './contatos/Index';
 import Documentos from './documentos/Index';
 import Enderecos from './enderecos/Index';
 
-import CloseButtom from "@/components/app/CloseButtom";
+import CloseButtom from "@/components/app/frontpage/CloseButtom";
 
 export default {
   name: 'Index',
   components: {
     CloseButtom,
+    Acessos,
     Contatos,
     Documentos,
     Enderecos

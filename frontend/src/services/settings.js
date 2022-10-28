@@ -2,6 +2,7 @@ const settings = {
     //restapi: 'http://192.168.73.252/siserp/restapi/',
     restapi: 'http://localhost:8000/',
     backend: 'http://localhost:8000/',
+    magicKey: 'Chave secreta 1',
     locale: 'pt-br',
     regexp: {
         limpa_valor: new RegExp(/[-./]/g),

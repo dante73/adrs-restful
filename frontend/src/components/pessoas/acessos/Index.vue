@@ -1,39 +1,25 @@
 <template>
     <b-container fluid class="p-0 m-0 h-100">
 
-        <!-- Form to edit or change a record data -->
-        <b-row v-if="state === 'editando' || state === 'criando'">
-            <b-col md="12">
-                <Form
-                        @getAll="getAll"
-                        @cancelState="cancelState"
-                        :pessoaId="pessoaId"
-                        :state="state"
-                        :enderecoObj="selecionado"
-                />
-            </b-col>
-        </b-row>
-        <!-- End of form -->
-
         <!-- Datatable with existing data -->
-        <b-row class="p-1 small" v-else>
+        <b-row class="p-1 small">
             <b-col md="12">
-                <b-table-simple id="table-enderecos" borderless responsive small striped>
-                    <b-tbody style="height: 200px; display: block; overflow: auto;">
-                        <b-tr :key="endereco.id" v-for="endereco in enderecos">
-                            <b-td>
-                                {{ endereco.rua }}, {{ endereco.numero }}<br/>
-                                {{ endereco.bairro }} - {{ endereco.cidade_nome }}<br/>
-                                {{ endereco.estado_nome }} - Cep. {{ endereco.cep }}
-                            </b-td>
-                            <b-td width="1%" align="right" nowrap>
+                <b-table-simple id="table-acessos" borderless responsive small striped>
+                    <b-tbody style="height: 200px; display: block; overflow: auto; ">
+                        <b-tr>
+                            <b-th width="99%" class="bg-info text-white text-center">Chave de Acesso</b-th>
+                            <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
+                        </b-tr>
+                        <b-tr :key="acesso.id" v-for="acesso in acessos">
+                            <b-td align="left">{{ acesso.chave }}</b-td>
+                            <b-td align="right" nowrap>
                                 <b-icon-pencil-square
-                                        @click="editar(endereco)"
+                                        @click="editar(acesso)"
                                         class="btn btn-large p-0 text-primary"
                                         v-if="showEditingControllers()"
                                 ></b-icon-pencil-square>&nbsp;
                                 <b-icon-trash
-                                        @click="apagar(endereco)"
+                                        @click="apagar(acesso)"
                                         class="btn btn-large p-0 text-danger"
                                         v-if="showEditingControllers()"
                                 ></b-icon-trash>
@@ -43,21 +29,31 @@
                 </b-table-simple>
             </b-col>
         </b-row>
-        <!-- End of Datatable -->
+        <!-- End of datatable -->
 
         <!-- Toolbar -->
-        <b-row class="p-1 small" v-if="showEditingControllers() && state !== 'editando' && state !== 'criando'">
+        <b-row class="p-1 small" v-if="showEditingControllers()">
             <b-col md="12">
                 <b-card-group class="shadow-lg">
                     <b-card no-body class="bg-light">
                         <b-card-body class="p-1 m-1 bg-light">
-                            <b-row v-if="state !== 'editando' || state !== 'criando'">
+                            <b-row v-if="state === 'editando' || state === 'criando'">
+                                <b-col md="12">
+                                    <Form
+                                            @getAll="getAll"
+                                            @cancelState="cancelState"
+                                            :pessoaId="pessoaId"
+                                            :state="state"
+                                            :acessoObj="selecionado" />
+                                </b-col>
+                            </b-row>
+                            <b-row v-else>
                                 <b-col md="6">
                                     <b-button
                                             @click="criar"
                                             variant="outline-success"
                                             size="sm"
-                                    >Adicionar {{ enderecos.length > 0 ? "um Novo " : "" }}Endereço</b-button>
+                                    >Adicionar {{ acessos.length > 0 ? "um Novo " : ""}}Acesso</b-button>
                                 </b-col>
                                 <b-col md="6" align="right">
                                     <CloseButtom size="sm" />
@@ -68,7 +64,7 @@
                 </b-card-group>
             </b-col>
         </b-row>
-        <!-- End of toolbar -->
+        <!-- End of Toolbar -->
 
     </b-container>
 </template>
@@ -79,13 +75,9 @@
 
     const emptyForm = {
         'id': 0,
-        'pessoa': null,
-        'cep': "",
-        'rua': "",
-        'numero': "",
-        'bairro': "",
-        'cidade': null,
-        'principal': false
+        'pessoa:': null,
+        'chave': "",
+        'senha': ""
     };
 
     export default {
@@ -97,7 +89,7 @@
         props: {
             pessoaId: {
                 type: Number,
-                required: true
+                required: false
             },
             pessoaState: {
                 type: String,
@@ -106,29 +98,26 @@
         },
         data() {
             return {
-                title: "Cadastro de Pessoas / Endereços",
-                enderecos: [],
+                title: "Cadastro de Pessoas / Acessos",
+                acessos: [],
                 state: undefined,
                 selecionado: undefined,
-                carregando: true
+                carregando: true,
+                form: emptyForm
             }
-        },
-        computed: {
         },
         mounted() {
             this.getAll();
         },
         methods: {
             async getAll() {
-                let r = await this.$http.get('endereco/loadAllByPersonId/' + this.pessoaId);
+                let r = await this.$http.get('acesso/loadAllByPersonId/' + this.pessoaId);
 
                 if (r.status && r.status === 'error') {
                     return;
                 }
-                console.log(r.data)
-                ;
 
-                this.$set(this, 'enderecos', r.data);
+                this.$set(this, 'acessos', r.data);
                 this.$set(this, 'carregando', false);
 
                 this.$set(this, 'form', emptyForm);
@@ -137,14 +126,14 @@
                 this.$set(this, 'selecionado', Object.assign({}, emptyForm));
                 this.$set(this, 'state', 'criando');
             },
-            editar(endereco) {
-                this.$set(this, 'selecionado', endereco);
+            editar(acesso) {
+                this.$set(this, 'selecionado', acesso);
                 this.$set(this, 'state', 'editando');
             },
-            async apagar(endereco) {
+            async apagar(acesso) {
                 // Faz o post para o backend
-                let id = endereco.id;
-                let r = await this.$http.delete('endereco/' + id, this.form);
+                let id = acesso.id;
+                let r = await this.$http.delete('acesso/' + id, this.form);
 
                 if (r && r.status && r.status === 200) {
 
@@ -167,6 +156,9 @@
 
                 this.getAll();
             },
+            dismissFormData() {
+                this.$root.$emit('bv::hide::modal', 'modal-form-1');
+            },
             showEditingControllers() {
                 return (this.pessoaState === 'criando' || this.pessoaState === 'editando');
             },
@@ -179,7 +171,7 @@
 </script>
 
 <style>
-    #table-enderecos {
+    #table-acessos {
         height: 200px;
         max-height: 200px;
     }

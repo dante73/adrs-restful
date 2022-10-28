@@ -16,8 +16,6 @@ require_once 'lib/Route.php';
 require_once 'lib/Model.php';
 require_once 'lib/HeaderFor.php';
 
-$request_header = getallheaders();
-
 try {
     /*
      * Pega e consiste informações necessárias de @_REQUEST para prosseguir
@@ -47,6 +45,8 @@ try {
     /*
      * Arquivo enviado pelo request
      */
+    $request_header = getallheaders();
+
     if ($method === 'POST' &&
         isset($request_header['Content-Type']) &&
         strpos($request_header['Content-Type'], 'multipart/form-data') !== false) {
@@ -62,6 +62,8 @@ try {
          * O model movimenta o arquivo enviado e retorna o resultado
          */
         $model->saveFile();
+
+        /* O script é finalizado pelo model */
     }
 
     /*
@@ -78,11 +80,11 @@ try {
      */
     if ($route['op'] !== '') {
         /**
-         * Executa a operação no model enviando os parâmetros passados na URL
+         * Executa a operação no model enviando os parâmetros e os dados passados
          */
         $action = $route['op'];
 
-        $result = $model->$action($route['params']);
+        $result = $model->$action($route['params'], $data);
     }
     else {
         /*

@@ -1,116 +1,118 @@
 <template>
-  <b-container fluid class="small">
+  <b-container fluid class="pt-2 small">
 
-    <b-row>
-      <b-col md="3" class="p-0 m-0 pl-1">
-        <b-form-group
-                id="input-group-cep"
-                label="Cep"
-                label-for="input-cep"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-input
-                  id="input-cep"
-                  v-model="form.cep"
-                  v-mask="$settings.masks.cep"
-                  autocomplete="off"
-                  required
-                  size="sm"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-      <b-col md="9" class="p-0 m-0 pl-1 pr-1">
-        <b-form-group
-                id="input-group-rua"
-                label="Rua"
-                label-for="input-rua"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-input
-                  id="input-rua"
-                  v-model="form.rua"
-                  autocomplete="off"
-                  required
-                  size="sm"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-    </b-row>
+    <b-container fluid class="p-0 m-0" style="height: 210px;">
+      <b-row>
+        <b-col md="3" class="p-0 m-0 pl-1">
+          <b-form-group
+                  id="input-group-cep"
+                  label="Cep"
+                  label-for="input-cep"
+                  label-class="bg-light text-center p-0 m-0"
+          >
+            <b-form-input
+                    id="input-cep"
+                    v-model="form.cep"
+                    v-mask="$settings.masks.cep"
+                    autocomplete="off"
+                    required
+                    size="sm"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="9" class="p-0 m-0 pl-1 pr-1">
+          <b-form-group
+                  id="input-group-rua"
+                  label="Rua"
+                  label-for="input-rua"
+                  label-class="bg-light text-center p-0 m-0"
+          >
+            <b-form-input
+                    id="input-rua"
+                    v-model="form.rua"
+                    autocomplete="off"
+                    required
+                    size="sm"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+      </b-row>
 
-    <b-row>
-      <b-col md="6" class="p-0 m-0 pl-1">
-        <b-form-group
-                id="input-group-numero"
-                label="Número/Complemento"
-                label-for="input-numero"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-input
-                  id="input-numero"
-                  v-model="form.numero"
-                  autocomplete="off"
-                  required
-                  size="sm"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-      <b-col md="6" class="p-0 m-0 px-1">
-        <b-form-group
-                id="input-group-bairro"
-                label="Bairro"
-                label-for="input-bairro"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-input
-                  id="input-bairro"
-                  v-model="form.bairro"
-                  autocomplete="off"
-                  required
-                  size="sm"
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6" class="p-0 m-0 pl-1">
-        <b-form-group
-                id="input-group-estado"
-                label="Estado"
-                label-for="select-estado"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-select
-                  id="select-estado"
-                  v-model="form.estado"
-                  :options="allStates"
-                  @change="choseState"
-                  size="sm"
+      <b-row>
+        <b-col md="6" class="p-0 m-0 pl-1">
+          <b-form-group
+                  id="input-group-numero"
+                  label="Número/Complemento"
+                  label-for="input-numero"
+                  label-class="bg-light text-center p-0 m-0"
           >
-            <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col md="6" class="p-0 m-0 px-1">
-        <b-form-group
-                id="input-group-cidade"
-                label="Cidade"
-                label-for="select-cidade"
-                label-class="bg-light text-center p-0 m-0"
-        >
-          <b-form-select
-                  id="select-cidade"
-                  v-model="form.cidade"
-                  :options="allCities"
-                  size="sm"
+            <b-form-input
+                    id="input-numero"
+                    v-model="form.numero"
+                    autocomplete="off"
+                    required
+                    size="sm"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" class="p-0 m-0 px-1">
+          <b-form-group
+                  id="input-group-bairro"
+                  label="Bairro"
+                  label-for="input-bairro"
+                  label-class="bg-light text-center p-0 m-0"
           >
-            <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-    </b-row>
+            <b-form-input
+                    id="input-bairro"
+                    v-model="form.bairro"
+                    autocomplete="off"
+                    required
+                    size="sm"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col md="6" class="p-0 m-0 pl-1">
+          <b-form-group
+                  id="input-group-estado"
+                  label="Estado"
+                  label-for="select-estado"
+                  label-class="bg-light text-center p-0 m-0"
+          >
+            <b-form-select
+                    id="select-estado"
+                    v-model="form.estado"
+                    :options="allStates"
+                    @change="choseState"
+                    size="sm"
+            >
+              <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
+            </b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" class="p-0 m-0 px-1">
+          <b-form-group
+                  id="input-group-cidade"
+                  label="Cidade"
+                  label-for="select-cidade"
+                  label-class="bg-light text-center p-0 m-0"
+          >
+            <b-form-select
+                    id="select-cidade"
+                    v-model="form.cidade"
+                    :options="allCities"
+                    size="sm"
+            >
+              <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
+            </b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-container>
 
     <!-- Toolbar -->
-    <b-row>
+    <b-row class="pt-1 small">
       <b-col md="12" class="p-1 m-0">
         <b-card-group class="shadow-lg">
           <b-card no-body class="bg-light">
@@ -125,8 +127,8 @@
                 </b-col>
                 <b-col md="6" align="right">
                   <b-button
-                          @click="resetFormData"
-                          variant="danger"
+                          @click="dismissFormData"
+                          variant="warning"
                           size="sm"
                   >Cancelar</b-button>
                 </b-col>
@@ -202,7 +204,7 @@
 
           this.$emit('getAll');
 
-          this.resetFormData();
+          this.dismissFormData();
         }
         else {
           this.$bvToast.toast(r.data, {
@@ -255,7 +257,7 @@
     enableChanges() {
       return (this.localState === 'criando' || this.localState === 'editando');
     },
-    resetFormData() {
+    dismissFormData() {
       this.$set(this.form, 'cep', '');
       this.$set(this.form, 'rua', '');
       this.$set(this.form, 'numero', '');
@@ -264,6 +266,8 @@
       this.$set(this.form, 'cidade', 0);
 
       document.getElementById('input-cep').focus();
+
+      this.$emit('cancelState');
     },
     choseState() {
       this.getAllCities();
@@ -282,7 +286,7 @@
       this.$set(this, 'allCities', s.data.map(elm => {
         return { text: elm.name, value: elm.id };
       }))
-    },
+    }
   },
   watch: {
     enderecoObj: function () {

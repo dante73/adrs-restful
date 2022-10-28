@@ -2,26 +2,24 @@
   <b-container fluid class="small">
     <b-row>
 
-      <b-col md="4" class="p-0 m-0">
-        <b-form-group id="input-group-tipo" class="text-center p-0 m-0">
-          <b-form-select
-                  id="select-tipo"
-                  v-model="form.tipo"
-                  :options="$settings.tipos.contatos"
-                  @change="typeValueChanges()"
+      <b-col md="5" class="p-0 m-0">
+        <b-form-group id="input-group-chave" class="text-center p-0 m-0">
+          <b-form-input
+                  id="input-chave"
+                  v-model="form.chave"
+                  :readonly="! enableChanges()"
+                  autocomplete="off"
+                  required
                   size="sm"
-          >
-            <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
-          </b-form-select>
+          ></b-form-input>
         </b-form-group>
       </b-col>
 
-      <b-col md="7" class="p-0 m-0 pl-1">
-        <b-form-group id="input-group-valor" class="text-center p-0 m-0">
+      <b-col md="6" class="p-0 m-0 pl-1">
+        <b-form-group id="input-group-senha" class="text-center p-0 m-0">
           <b-form-input
-                  id="input-valor"
-                  v-model="form.valor"
-                  v-mask="maskByType()"
+                  id="input-senha"
+                  v-model="form.senha"
                   :readonly="! enableChanges()"
                   autocomplete="off"
                   required
@@ -51,9 +49,9 @@
   export default {
     data() {
       return {
-        title: "Cadastro de Pessoas / Contatos",
-        model: 'contato',
-        form: this.contatoObj,
+        title: "Cadastro de Pessoas / Acessos",
+        model: 'acesso',
+        form: this.acessoObj,
         localState: this.state,
       }
     },
@@ -62,7 +60,7 @@
         type: Number,
         required: true
       },
-      contatoObj: {
+      acessoObj: {
         type: Object,
         required: false
       },
@@ -70,10 +68,6 @@
         type: String,
         required: false
       }
-    },
-    mounted() {
-        console.log(this.form);
-        console.log(this.contatoObj);
     },
     methods: {
       async saveFormData() {
@@ -88,12 +82,12 @@
           if (this.localState == 'editando') {
             let id = this.form.id;
 
-            r = await this.$http.post('contato/' + id, this.form);
+            r = await this.$http.post('acesso/' + id, this.form);
           }
           else if (this.localState == 'criando') {
             this.$set(this.form, 'pessoa', this.pessoaId);
 
-            r = await this.$http.put('contato', this.form);
+            r = await this.$http.put('acesso', this.form);
           }
 
           if (r && r.status && r.status === 200) {
@@ -121,7 +115,7 @@
       async deleteFormData() {
         // Faz o post para o backend
         let id = this.form.id;
-        let r = await this.$http.delete('contato/' + id, this.form);
+        let r = await this.$http.delete('acesso/' + id, this.form);
 
         if (r && r.status && r.status === 200) {
 
@@ -154,70 +148,35 @@
         this.$emit('getAll');
       },
       validate() {
-        let t = document.getElementById('select-tipo').value;
-        let v = document.getElementById('input-valor').value;
+        let c = this.form.chave;
+        let s = this.form.senha;
 
         /**
          * Se estiverem vazios não faz nada, só retorna negativo
          */
-        if (t === "") {
+        if (c === "") {
           this.$bvToast.toast(
-                  'Meio de contato inválido!', {
+                  'Chave de acesso inválida!', {
                     title: this.title,
                     autoHideDelay: this.$settings.config.toastErrorTimeout,
                     appendToast: true,
                     variant: 'danger'
                   });
 
-          document.getElementById('select-tipo').focus();
+          document.getElementById('input-chave').focus();
 
           return false;
         }
-        else if (v === "") {
+        else if (s === "") {
           this.$bvToast.toast(
-                  'Identificação do contato inválido!', {
+                  'Senha de acesso inválida!', {
                     title: this.title,
                     autoHideDelay: this.$settings.config.toastErrorTimeout,
                     appendToast: true,
                     variant: 'danger'
                   });
 
-          document.getElementById('input-valor').focus();
-
-          return false;
-        }
-
-        /**
-         * Seleciona uma expressão regular de validação, de acordo com o tipo de contato
-         */
-        let regexp;
-        switch (t) {
-          case 'C':
-            regexp = this.$settings.regexp.valida_celular;
-            v = v.replace(this.$settings.regexp.limpa_telefone, '');
-            break;
-          case 'F':
-            regexp = this.$settings.regexp.valida_telefone;
-            v = v.replace(this.$settings.regexp.limpa_telefone, '');
-            break;
-          case 'E':
-            regexp = this.$settings.regexp.valida_email;
-            break;
-        }
-
-        /**
-         * Testa a expressão com o valor e retorna negativo se não passar
-         */
-        if (regexp && ! regexp.test(v)) {
-          let text = this.$support.typeTextByKey(this.$settings.tipos.contatos, t);
-
-          this.$bvToast.toast(
-                  text + ' inválido!', {
-                    title: this.title,
-                    autoHideDelay: this.$settings.config.toastErrorTimeout,
-                    appendToast: true,
-                    variant: 'danger'
-                  });
+          document.getElementById('input-senha').focus();
 
           return false;
         }
@@ -227,35 +186,18 @@
       enableChanges() {
         return (this.localState === 'criando' || this.localState === 'editando');
       },
-      maskByType() {
-        let r = "";
-        switch (this.form.tipo) {
-          case 'F':
-            r = this.$settings.masks.telefone;
-            break;
-          case 'C':
-            r = this.$settings.masks.celular;
-            break;
-        }
-        return r;
-      },
       dismissFormData() {
-        this.$set(this.form, 'tipo', '');
-        this.$set(this.form, 'valor', '');
+        this.$set(this.form, 'chave', '');
+        this.$set(this.form, 'senha', '');
 
-        document.getElementById('select-tipo').focus();
+        document.getElementById('input-chave').focus();
 
         this.$emit('cancelState');
-      },
-      typeValueChanges() {
-        this.$set(this.form, 'valor', '');
-
-        document.getElementById('input-valor').focus();
       }
     },
     watch: {
-      contatoObj: function () {
-        this.$set(this, 'form', this.contatoObj);
+      acessoObj: function () {
+        this.$set(this, 'form', this.acessoObj);
       },
       state: function () {
         this.$set(this, 'localState', this.state);
