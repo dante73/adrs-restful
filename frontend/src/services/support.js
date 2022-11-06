@@ -1,6 +1,8 @@
+import moment from "moment";
+
 const support = {
     /**
-     * Retorna qual a preposição a ser utilizada por estado (Unidade Federativa do Brasil
+     * Retorna qual a preposição a ser utilizada por estado (Unidade Federativa do Brasil)
      *
      * @param estado é o objeto estado retornado pelo model restful state
      * @returns {string}
@@ -23,6 +25,13 @@ const support = {
             }
         }
         return "";
+    },
+    yearsBetween: function(from, to) {
+        var firstDate = moment(from);
+        var secondDate = moment(to);
+        var yearDiff = firstDate.diff(secondDate, "year");
+
+        return yearDiff * -1;
     }
 }
 

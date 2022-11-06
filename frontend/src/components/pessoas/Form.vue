@@ -5,7 +5,7 @@
         <b-row>
 
           <!-- Avatar -->
-          <b-col md="3" class="text-center">
+          <b-col md="4" class="text-center">
             <b-row class="h-100">
               <b-card-group class="pl-0 pr-2 w-100">
                 <b-card no-body>
@@ -15,13 +15,16 @@
                   <b-card-body>
                     <b-avatar id="avatar-foto" :src="avatar.url" text="Foto" size="144px"></b-avatar>
                   </b-card-body>
+                  <b-card-footer class="small">
+                    {{ $support.yearsBetween(form.nascimento, new Date()) }} anos de idade
+                  </b-card-footer>
                 </b-card>
               </b-card-group>
             </b-row>
           </b-col>
           <!-- End of avatar -->
 
-          <b-col md="9" class="p-0 m-0">
+          <b-col md="8" class="p-0 m-0">
             <b-container fluid class="p-0 m-0">
 
               <b-tabs small fill>
@@ -34,7 +37,7 @@
                         <b-container fluid class="p-0 m-0" style="height: 210px;">
 
                           <b-row class="p-0 pl-1 pt-1 small">
-                            <b-col md="3">
+                            <b-col md="4">
                               <b-form-group
                                       id="input-group-birthday"
                                       class="pt-0"
@@ -146,14 +149,14 @@
 
                                 <b-card-body v-if='localState==="criando"' class="p-1 m-1 bg-light">
                                   <b-row>
-                                    <b-col md="6">
+                                    <b-col md="8">
                                       <b-button
                                               @click="saveFormData"
                                               variant="outline-danger"
                                               size="sm"
                                       >Gravar o Novo Registro</b-button>
                                     </b-col>
-                                    <b-col md="6" align="right">
+                                    <b-col md="4" align="right">
                                       <CloseButtom size="sm" caption="Abandonar" />
                                     </b-col>
                                   </b-row>
@@ -161,14 +164,14 @@
 
                                 <b-card-body v-else-if='localState=="editando"' class="p-1 m-1 bg-light">
                                   <b-row>
-                                    <b-col md="6">
+                                    <b-col md="8">
                                       <b-button
                                               @click="saveFormData"
                                               variant="outline-danger"
                                               size="sm"
                                       >Gravar Alterações</b-button>
                                     </b-col>
-                                    <b-col md="6" align="right">
+                                    <b-col md="4" align="right">
                                       <CloseButtom size="sm" caption="Abandonar" />
                                     </b-col>
                                   </b-row>
@@ -176,14 +179,14 @@
 
                                 <b-card-body v-else-if='localState=="apagando"' class="p-1 m-1 bg-light">
                                   <b-row>
-                                    <b-col md="6">
+                                    <b-col md="8">
                                       <b-button
                                               @click="deleteFormData"
                                               variant="outline-danger"
                                               size="sm"
                                       >Apagar</b-button>
                                     </b-col>
-                                    <b-col md="6" align="right">
+                                    <b-col md="4" align="right">
                                       <CloseButtom size="sm" caption="Abandonar" />
                                     </b-col>
                                   </b-row>

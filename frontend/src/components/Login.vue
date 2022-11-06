@@ -111,15 +111,16 @@
         let response = await this.$http.post('acesso/authenticate', this.form);
 
         if (response.data.status === 'success' && response.data.data && response.data.data.authenticated) {
-          /* Em caso de erro, mostra a mensagem retornada */
           this.$set(this, 'infoError', true);
           this.$set(this, 'message', 'Autenticado');
 
           /**
            *  Armazena o token em local-storage.
-           *  O ls atua como "set" quando o segundo valor é informado.
+           *  O ls atua como "setter" quando o segundo valor é informado.
            */
           ls('token', response.data.data.token);
+
+          console.log(response.data.data.token);
 
           /* Chama a mutation em store (através do commit ?) */
           store.commit('LOGIN_USER');

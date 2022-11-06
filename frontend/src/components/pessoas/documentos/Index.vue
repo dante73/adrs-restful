@@ -55,14 +55,14 @@
                                 </b-col>
                             </b-row>
                             <b-row v-else>
-                                <b-col md="6">
+                                <b-col md="8">
                                     <b-button
                                             @click="criar"
                                             variant="outline-success"
                                             size="sm"
                                     >Adicionar {{ documentos.length > 0 ? "uma Nova " : "" }}Documentação</b-button>
                                 </b-col>
-                                <b-col md="6" align="right">
+                                <b-col md="4" align="right">
                                     <CloseButtom size="sm" />
                                 </b-col>
                             </b-row>
@@ -109,7 +109,8 @@
                 documentos: [],
                 state: undefined,
                 selecionado: undefined,
-                carregando: true
+                carregando: true,
+                form: emptyForm
             }
         },
         mounted() {

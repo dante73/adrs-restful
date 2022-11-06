@@ -110,7 +110,8 @@
                 enderecos: [],
                 state: undefined,
                 selecionado: undefined,
-                carregando: true
+                carregando: true,
+                form: emptyForm
             }
         },
         computed: {
@@ -125,8 +126,6 @@
                 if (r.status && r.status === 'error') {
                     return;
                 }
-                console.log(r.data)
-                ;
 
                 this.$set(this, 'enderecos', r.data);
                 this.$set(this, 'carregando', false);

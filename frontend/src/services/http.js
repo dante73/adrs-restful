@@ -6,24 +6,8 @@ import ls from "local-storage";
 axios.defaults.baseURL = settings.restapi;
 
 axios.interceptors.request.use(config => {
-        // Attach jwt token
-        config.headers.Authorization = `${ls('token')}`;
+    config.headers.Authorization = `${ls('token')}`;
 
-        config.baseURL = settings.backend;
-    /* Alguns dados e operações serão feitos pelo backend com nodejs. */
-    /*
-    if (config.url.match(/(\/api\/)?(login|estado|regiao|cidade)\/?/)) {
-    }
-    else {
-        if (
-            config.method === 'post' ||
-            config.method === 'put'
-        ) {
-            config.headers['Content-Type'] = 'multipart/form-data;';
-        }
-
-    }
-     */
     return config;
 });
 
@@ -40,8 +24,10 @@ const http = {
     post: (url, data) => axios.post(url, data),
     put: (url, data) => axios.put(url, data),
     get: async function(url) {
-            let response = await fetch(settings.restapi + url);
-            let json = await response.json();
+            //let response = await fetch(settings.restapi + url);
+            //let json = await response.json();
+            let response = await axios.get(url);
+            let json = response.data;
 
             return json;
         },

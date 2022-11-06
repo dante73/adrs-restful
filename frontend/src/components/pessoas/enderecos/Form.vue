@@ -118,14 +118,14 @@
           <b-card no-body class="bg-light">
             <b-card-body class="p-1 m-1 bg-light">
               <b-row>
-                <b-col md="6">
+                <b-col md="8">
                   <b-button
                           @click="saveFormData"
                           variant="outline-success"
                           size="sm"
                   >Gravar o Novo Endereço</b-button>
                 </b-col>
-                <b-col md="6" align="right">
+                <b-col md="4" align="right">
                   <b-button
                           @click="dismissFormData"
                           variant="warning"

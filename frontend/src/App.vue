@@ -1,5 +1,5 @@
 <template>
-    <b-container class="p-0 m-0" fluid>
+    <b-container class="p-0 m-0 h-100" fluid>
 
         <!-- Sidebar and Topbar with all components, only for users who is logged in -->
         <b-container class="p-0 m-0" fluid v-if="isLogged">
@@ -17,6 +17,12 @@
         </b-container>
         <!-- End of main container with the view for router -->
 
+        <!-- Footer -->
+        <b-container class="p-0 m-0" fluid v-if="isLogged">
+            <Footer />
+        </b-container>
+        <!-- End of Footer -->
+
     </b-container>
 </template>
 
@@ -25,11 +31,13 @@
 
     import Sidebar from "@/components/app/frontpage/Sidebar";
     import TopbarNav from "@/components/app/frontpage/TopbarNav";
+    import Footer from "@/components/app/frontpage/Footer";
 
     export default {
         components: {
             Sidebar,
-            TopbarNav
+            TopbarNav,
+            Footer
         },
         beforeCreate() {
             if ( ! store.state.isLogged) {

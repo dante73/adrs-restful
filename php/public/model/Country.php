@@ -46,6 +46,17 @@ class Country extends Collection
     }
 
     /**
+     * Sinaliza se o método solicitado necessita de autenticação, o padrão é verdadeiro, sendo falso somente no
+     * caso do usuário estar se autenticando no método de autenticação especificado pela condição.
+     *
+     * @param $op
+     * @return bool
+     */
+    public function authNeeded($op) {
+        return true;
+    }
+
+    /**
      * Getter e setters dos campos da tabela aqui gerenciada
      */
     private function getName() {

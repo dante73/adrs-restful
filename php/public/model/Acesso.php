@@ -39,6 +39,8 @@ class Acesso extends Collection
              * Configura nome da tabela na classe pai
              */
             parent::__construct($this->collection_name);
+
+            $this->bypassAuthorization = true;
         }
         /**
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
@@ -46,6 +48,27 @@ class Acesso extends Collection
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Sinaliza que o método solicitado necessita de autenticação, o padrão é verdadeiro, sendo falso somente no
+     * caso do usuário estar se autenticando no método de autenticação especificado pela condição.
+     *
+     * @param $op
+     * @return bool
+     */
+    public function authNeeded($op) {
+        /**
+         * Somente o método authenticate não exigirá que o usuário esteja logado.
+         */
+        if ($op === 'authenticate') {
+            return false;
+        }
+
+        /**
+         * Todos os outros procede normalmente, exigindo a chave de autenticação.
+         */
+        return true;
     }
 
     /**
@@ -226,7 +249,7 @@ class Acesso extends Collection
 
     public function authenticate($params, $data = []) {
         /* Verify required data */
-        if ( ! isset($data->login) || ! isset($data->encrypted)) {
+        if ( ! isset($data->login) || ! isset($data->password)) {
             throw new Exception('Insufficient data to authenticate.');
         }
 
@@ -277,7 +300,7 @@ class Acesso extends Collection
             /**
              * Executa comando preparado informando os valores diretamente na chamada
              */
-            $result = $stmt->execute([$data->login, $data->encrypted]);
+            $result = $stmt->execute([$data->login, $data->password]);
 
             /*
              * Se houver qualquer falha, gera um estado de exceção

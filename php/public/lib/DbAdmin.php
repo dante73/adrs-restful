@@ -6,6 +6,8 @@
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
  */
+require_once 'lib/Constants.php';
+
 class DbAdmin
 {
     /**

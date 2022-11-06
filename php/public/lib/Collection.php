@@ -7,7 +7,11 @@
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
  */
+require_once 'vendor/autoload.php';
 require_once 'lib/DbAdmin.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 /*
  * Estados do registro
@@ -733,5 +737,41 @@ class Collection
             http_response_code(403);
             throw new Exception('Error while moving file to assets.');
         }
+    }
+
+    /**
+     * Verifica os dados de autenticação para uso do serviço
+     */
+    public function verifyServiceAuthorization() {
+        $config = parse_ini_file(Constants::INI_FILENAME, true);
+
+        $request_header = apache_request_headers();
+
+        if ($request_header === false) {
+            throw new Exception('No headers.');
+        }
+
+        if ( ! isset($request_header['Authorization'])) {
+            throw new Exception('No permission.');
+        }
+
+        $key = $config['JWT']['key'];
+        $token = $request_header['Authorization'];
+        $decoded = JWT::decode($token, new Key($key, 'HS256'));
+
+        if ( ! (
+            isset($decoded->id) &&
+            isset($decoded->login) &&
+            isset($decoded->nome) &&
+            isset($decoded->timeout)))
+        {
+            throw new Exception('Invalid authorization.');
+        }
+
+        if ($decoded->timeout < time()) {
+            throw new Exception('Authorization expired.');
+        }
+
+        return true;
     }
 }
