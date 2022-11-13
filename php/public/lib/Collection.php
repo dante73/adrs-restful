@@ -243,14 +243,16 @@ class Collection
     }
 
     /*
-     *   Verifica se @key é um campo válido para gravação/edição e, no caso de edição, se o campo existe na tabela.
+     *      Verifica se @key é um campo válido para gravação/edição e, no caso de edição, se o campo existe na tabela.
      * Isto para evitar falhas nas operações SQL; o campo é informado no JSON, mas não existe na coleção/tabela.
+     *      É considerado somente o método "PUT", porque no caso de criação ("POST") deve ser possível fixar um ID,
+     * isto para que a importação de estados e cidades absorva os IDs pré estabelecidos.
      *
      * @param $key      Nome do campo para ser verificado
      * @return bool     Sinaliza para o chamador se o campo é válido/existente na coleção/tabela
      */
     private function notAValidField($key) {
-        return (boolean)(($key === 'id' && $this->getMethod() === 'POST') || ! in_array($key, $this->getFields()));
+        return (boolean)(($key === 'id' && $this->getMethod() === 'PUT') || ! in_array($key, $this->getFields()));
     }
 
     /**
@@ -653,6 +655,31 @@ class Collection
                 /**
                  * Se informou o @id procede com a modificação
                  */
+                if ($id === 0) {
+                    /**
+                     * Criação de um novo registro no banco de dados
+                     */
+                    $this->insert($this->dataVO());
+
+                    return array(
+                        'code' => 201,
+                        'text' => 'Record created successfully.',
+                        'data' => $this->dataVO()
+                    );
+                }
+                else {
+                    throw new Exception('To change a record use PUT method instead POST.');
+                }
+                break;
+            case 'PUT':
+                /**
+                 * Higieniza os dados antes de qualquer operação no banco de dados
+                 */
+                $this->sanitize($data);
+
+                /**
+                 * Se informou o @id procede com a modificação
+                 */
                 if ($id !== 0) {
                     /**
                      * Só executa ação se houver mudança no conteúdo
@@ -678,32 +705,7 @@ class Collection
                     }
                 }
                 else {
-                    throw new Exception('To create new record use PUT method instead POST.');
-                }
-                break;
-            case 'PUT':
-                /**
-                 * Higieniza os dados antes de qualquer operação no banco de dados
-                 */
-                $this->sanitize($data);
-
-                /**
-                 * Se informou o @id procede com a modificação
-                 */
-                if ($id === 0) {
-                    /**
-                     * Criação de um novo registro no banco de dados
-                     */
-                    $this->insert($this->dataVO());
-
-                    return array(
-                        'code' => 201,
-                        'text' => 'Record created successfully.',
-                        'data' => $this->dataVO()
-                    );
-                }
-                else {
-                    throw new Exception('To change a record use POST method instead PUT.');
+                    throw new Exception('To create new record use POST method instead PUT.');
                 }
                 break;
         }

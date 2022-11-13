@@ -328,14 +328,14 @@ export default {
       if (v) {
         let r;
 
-        // Faz o post para o backend
+        // Faz o envio para o backend
         if (this.localState == 'editando') {
           let id = this.form.id;
 
-          r = await this.$http.post('pessoa/' + id, this.form);
+          r = await this.$http.put('pessoa/' + id, this.form);
         }
         else if (this.localState == 'criando') {
-          r = await this.$http.put('pessoa', this.form);
+          r = await this.$http.post('pessoa', this.form);
         }
 
         if (r && r.status && r.status === 200) {
@@ -359,7 +359,7 @@ export default {
       }
     },
     async deleteFormData() {
-      // Faz o post para o backend
+      // Faz o delete para o backend
       let id = this.form.id;
       let r = await this.$http.delete('pessoa/' + id, this.form);
 

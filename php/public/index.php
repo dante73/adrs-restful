@@ -28,16 +28,22 @@ try {
     $model = Model::takeModel($route['name']);
 
     /**
+     * Flag de operação informada
+     */
+    $action = $route['op'];
+    $hasAnAction = (boolean)($action !== '');
+
+    /**
      * Verifica se foi especificada uma operação para ser executada e se esta operação existe.
      */
-    if ($route['op'] !== '' && ! method_exists($model, $route['op'])) {
+    if ($hasAnAction && ! method_exists($model, $action)) {
         throw new Exception('Invalid operation.');
     }
 
     /**
      * Verifica se a operação exige autenticação e se o usuário está autenticado.
      */
-    if ($model->authNeeded($route['op']) && ! $model->verifyServiceAuthorization()) {
+    if ($model->authNeeded($action) && ! $model->verifyServiceAuthorization()) {
         throw new Exception('No permission on index.');
     }
 
@@ -55,10 +61,14 @@ try {
     $request_header = getallheaders();
 
     /**
+     * Flag para métodos com envio de dados
+     */
+    $dataSent = (boolean)($method === 'POST' || $method === 'PUT');
+
+    /**
      * Trata arquivos enviados pelo request.
      */
-    if ($method === 'POST' &&
-        isset($request_header['Content-Type']) &&
+    if ($dataSent && isset($request_header['Content-Type']) &&
         strpos($request_header['Content-Type'], 'multipart/form-data') !== false) {
 
         /**
@@ -82,19 +92,17 @@ try {
     /**
      * Tanto no PUT quanto no POST é obrigatório o envio dos dados a serem processados.
      */
-    if ( ($method === 'POST' || $method === 'PUT') && ! $data) {
+    if ($dataSent && ! $data) {
         throw new Exception('Invalid JSON.');
     }
 
     /**
      * Verifica se foi especificado uma operação a ser executada.
      */
-    if ($route['op'] !== '') {
+    if ($hasAnAction) {
         /**
          * Executa a operação no model enviando os parâmetros e os dados passados.
          */
-        $action = $route['op'];
-
         $result = $model->$action($route['params'], $data);
     }
     else {
