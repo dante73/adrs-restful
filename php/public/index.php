@@ -11,10 +11,11 @@
  * PUT: http://localhost:8000/cliente/9/    -> U -> Modifica dados do cliente
  * DELETE: http://localhost:8000/cliente/8/ -> D -> Deleta dados do cliente
  */
+require_once 'lib/core/Autoloader.php';
 
-require_once 'lib/Route.php';
-require_once 'lib/Model.php';
-require_once 'lib/HeaderFor.php';
+use Route;
+use Model;
+use HeaderFor;
 
 try {
     /**
@@ -37,6 +38,7 @@ try {
      * Verifica se foi especificada uma operação para ser executada e se esta operação existe.
      */
     if ($hasAnAction && ! method_exists($model, $action)) {
+        http_response_code(404);
         throw new Exception('Invalid operation.');
     }
 
@@ -44,6 +46,7 @@ try {
      * Verifica se a operação exige autenticação e se o usuário está autenticado.
      */
     if ($model->authNeeded($action) && ! $model->verifyServiceAuthorization()) {
+        http_response_code(403);
         throw new Exception('No permission on index.');
     }
 
@@ -75,6 +78,7 @@ try {
          * Verifica se o POST do arquivo está completo.
          */
         if ( ! isset($_FILES) || ! sizeof($_FILES) > 0) {
+            http_response_code(400);
             throw new Exception('Invalid POST.');
         }
 
@@ -93,6 +97,7 @@ try {
      * Tanto no PUT quanto no POST é obrigatório o envio dos dados a serem processados.
      */
     if ($dataSent && ! $data) {
+        http_response_code(400);
         throw new Exception('Invalid JSON.');
     }
 
@@ -115,6 +120,7 @@ try {
     /*
      * Finaliza o processo REST com sucesso informando o resultado.
      */
+    http_response_code(200);
     exit(json_encode(array('status' => 'success', 'data' => $result)));
 }
 catch (Exception $e) {

@@ -6,7 +6,9 @@
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
  */
-require_once 'lib/Constants.php';
+require_once 'lib/core/Autoloader.php';
+
+use Constants;
 
 class DbAdmin
 {
@@ -130,7 +132,7 @@ class DbAdmin
          * Verifica se o arquivo .ini informado em Constants.php existe e é legível
          */
         if ( ! is_readable(Constants::INI_FILENAME)) {
-            throw new Exception('System are not setted.');
+            throw new Exception('System isn\'t setted.');
         }
 
         /**

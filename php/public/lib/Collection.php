@@ -765,12 +765,13 @@ class Collection
             isset($decoded->id) &&
             isset($decoded->login) &&
             isset($decoded->nome) &&
-            isset($decoded->timeout)))
-        {
+            isset($decoded->timeout))) {
+            http_response_code(401);
             throw new Exception('Invalid authorization.');
         }
 
         if ($decoded->timeout < time()) {
+            http_response_code(401);
             throw new Exception('Authorization expired.');
         }
 

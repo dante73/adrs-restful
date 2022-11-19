@@ -51,13 +51,14 @@ class Model
             $file = self::modelPath . '/' . $class . '.php';
 
             if ( ! file_exists($file)) {
+                http_response_code(404);
                 throw new Exception('Invalid model.');
             }
 
             /*
              * Carrega o arquivo com a classe correspondente a rota
              */
-            require_once($file);
+            require_once $file;
 
             /*
              * Retorna um objecto instanciado, pronto para ser utilizado pelo processo chamador
@@ -68,6 +69,7 @@ class Model
             /*
              * Pára o processo e informa que não há model para a rota
              */
+            http_response_code(404);
             throw new Exception('Unknown model.');
         }
     }

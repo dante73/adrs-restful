@@ -5,7 +5,7 @@
  * @category REST_API
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
- */
+*/
 class HeaderFor
 {
     /*

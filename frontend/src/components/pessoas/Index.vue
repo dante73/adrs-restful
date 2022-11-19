@@ -136,6 +136,7 @@
             async getAll() {
                 let r = await this.$http.get('pessoa');
 
+                console.log(r);
                 this.$set(this, 'pessoas', r.data);
                 this.$set(this, 'carregando', false);
                 this.$set(this, 'modalShow', false);

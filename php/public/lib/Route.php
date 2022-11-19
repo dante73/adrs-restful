@@ -8,7 +8,9 @@
  * @package  adrs-restful
  * @author   Daniel <daniel@antunesbr.com>
  */
-require_once 'lib/Model.php';
+require_once 'lib/core/Autoloader.php';
+
+use Model;
 
 /**
  * Class Route
@@ -31,6 +33,7 @@ class Route
          * Se não encontrar os parâmetros (na variável @r) não prossegue
          */
         if ( ! isset($data['r'])) {
+            http_response_code(404);
             throw new Exception('Unknown route.');
         }
 
@@ -69,6 +72,7 @@ class Route
                  * Verifica se o @id é um número inteiro válido
                  */
                 if ( ! $id) {
+                    http_response_code(400);
                     throw new Exception('Invalid data.');
                 }
             }
@@ -93,6 +97,7 @@ class Route
          * Verifica se @name é válido (não vazio) e não contém caracteres estranhos para um(a) rota/model
          */
         if ( ! $name || preg_match('/\W/', $name)) {
+            http_response_code(400);
             throw new Exception('Invalid data.');
         }
 
@@ -100,6 +105,7 @@ class Route
          * Verifica se a rota especificada em @name é valida, tem um model definido em Model
          */
         if ( ! preg_match(Model::getReValidModelNames(), $name)) {
+            http_response_code(404);
             throw new Exception('Invalid route.');
         }
 
