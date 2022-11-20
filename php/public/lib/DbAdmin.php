@@ -8,8 +8,6 @@
  */
 require_once 'lib/core/Autoloader.php';
 
-use Constants;
-
 class DbAdmin
 {
     /**

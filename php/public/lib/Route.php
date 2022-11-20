@@ -1,7 +1,7 @@
 <?php
 /**
  *   Esta classe php verifica na URL informada se há informações suficientes para o REST prosseguir.
- *   Se houver verifica estas informações e consiste para serem utilizadas pelos processos que virão
+ *   Se houver verifica estas informações e consiste para serem utilizadas pelos processos do REST que virão
  * na sequência.
  *
  * @category REST_API
@@ -9,8 +9,6 @@
  * @author   Daniel <daniel@antunesbr.com>
  */
 require_once 'lib/core/Autoloader.php';
-
-use Model;
 
 /**
  * Class Route
@@ -30,7 +28,7 @@ class Route
         $data = $_REQUEST;
 
         /*
-         * Se não encontrar os parâmetros (na variável @r) não prossegue
+         * Se não encontrar os parâmetros (no index @r) não prossegue
          */
         if ( ! isset($data['r'])) {
             http_response_code(404);

@@ -69,6 +69,7 @@ class Collection
      * Construtor da classe, configura a lista de campos e o nome da collection que receberá da classe descendente
      *
      * @param $collection_name
+     * @throws Exception
      */
     function __construct($collection_name) {
         /**
@@ -121,6 +122,7 @@ class Collection
 
     /**
      * Verifica se a coleção/tabela existe no banco de dados conectado
+     * @throws Exception
      */
     protected function table_exists() {
         /**
@@ -744,14 +746,8 @@ class Collection
     /**
      * Verifica os dados de autenticação para uso do serviço
      */
-    public function verifyServiceAuthorization() {
+    public function verifyServiceAuthorization($request_header) {
         $config = parse_ini_file(Constants::INI_FILENAME, true);
-
-        $request_header = apache_request_headers();
-
-        if ($request_header === false) {
-            throw new Exception('No headers.');
-        }
 
         if ( ! isset($request_header['Authorization'])) {
             throw new Exception('No permission.');

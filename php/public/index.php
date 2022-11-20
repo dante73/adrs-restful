@@ -13,29 +13,26 @@
  */
 require_once 'lib/core/Autoloader.php';
 
-use Route;
-use Model;
-use HeaderFor;
-
 try {
     /**
-     * Consiste informações necessárias do @_REQUEST para prosseguir.
+     * Consiste informações necessárias do @_REQUEST utilizando a classe Route, que retornará um array associativo
+     * com informações da requisição a ser feita pelo processo.
      */
     $route = Route::takeRoute();
 
     /**
-     * Com as informações obtidas do @_REQUEST, monta um objeto model para a operação.
+     * Com as informações obtidas do @_REQUEST e classe Route, monta o objeto model necessário para a operação.
      */
     $model = Model::takeModel($route['name']);
 
     /**
-     * Flag de operação informada
+     * Seta "flags" da operação informada.
      */
     $action = $route['op'];
     $hasAnAction = (boolean)($action !== '');
 
     /**
-     * Verifica se foi especificada uma operação para ser executada e se esta operação existe.
+     * Verifica se foi especificada uma operação para ser executada e se esta operação existe no "model".
      */
     if ($hasAnAction && ! method_exists($model, $action)) {
         http_response_code(404);
@@ -43,15 +40,25 @@ try {
     }
 
     /**
-     * Verifica se a operação exige autenticação e se o usuário está autenticado.
+     * Seta localmente todas os cabeçalhos enviados pelo "request" http.
      */
-    if ($model->authNeeded($action) && ! $model->verifyServiceAuthorization()) {
+    $request_header = apache_request_headers();
+
+    if ($request_header === false) {
+        http_response_code(401);
+        throw new Exception('No headers.');
+    }
+
+    /**
+     * Verifica se a operação exige autenticação, se o usuário está autenticado com um "token" válido.
+     */
+    if ($model->authNeeded($action) && ! $model->verifyServiceAuthorization($request_header)) {
         http_response_code(403);
         throw new Exception('No permission on index.');
     }
 
     /**
-     * Configura o ambiente de comunicação HTTP de acordo com o método solicitado.
+     * Configura o ambiente de comunicação (cabeçalhos) HTTP de acordo com o método solicitado.
      */
     $method = $_SERVER['REQUEST_METHOD'];
 
@@ -59,17 +66,12 @@ try {
     $header->putHeaders();
 
     /**
-     * Seta localmente todas os cabeçalhos enviados no request http.
-     */
-    $request_header = getallheaders();
-
-    /**
-     * Flag para métodos com envio de dados
+     * Seta "flag" @dataSent para métodos que fazem envio de dados.
      */
     $dataSent = (boolean)($method === 'POST' || $method === 'PUT');
 
     /**
-     * Trata arquivos enviados pelo request.
+     * Trata arquivos enviados pelo "request" como imagens de avatar.
      */
     if ($dataSent && isset($request_header['Content-Type']) &&
         strpos($request_header['Content-Type'], 'multipart/form-data') !== false) {
@@ -89,12 +91,12 @@ try {
     }
 
     /*
-     * Capta todos os dados passados por JSON e verifica (aqui superficialmente) se estão válidos.
+     * Capta todos os dados passados por JSON.
      */
     $data = json_decode(file_get_contents("php://input", true));
 
     /**
-     * Tanto no PUT quanto no POST é obrigatório o envio dos dados a serem processados.
+     * Tanto no PUT quanto no POST é obrigatório o envio de dados para serem processados.
      */
     if ($dataSent && ! $data) {
         http_response_code(400);
@@ -112,13 +114,20 @@ try {
     }
     else {
         /**
-         * Envia as informações reunidas para o model agir de acordo com o solicitado.
+         * Aqui é atendido o C R U D .
+         *
+         * Quando não há uma operação especificada, o sistema irá agir de acordo com o método "HTTP" :
+         *
+         * POST: http://localhost:8000/cliente/     -> C -> Novo cliente
+         * GET: http://localhost:8000/cliente/4/    -> R -> Consulta dados do cliente
+         * PUT: http://localhost:8000/cliente/9/    -> U -> Modifica dados do cliente
+         * DELETE: http://localhost:8000/cliente/8/ -> D -> Deleta dados do cliente
          */
         $result = $model->doIt($method, $route['id'], $data);
     }
 
     /*
-     * Finaliza o processo REST com sucesso informando o resultado.
+     * Se tudo deu certo, finaliza o processo REST com sucesso informando o resultado.
      */
     http_response_code(200);
     exit(json_encode(array('status' => 'success', 'data' => $result)));
