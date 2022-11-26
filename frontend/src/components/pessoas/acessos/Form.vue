@@ -10,8 +10,7 @@
                   :readonly="! enableChanges()"
                   autocomplete="off"
                   required
-                  size="sm"
-          ></b-form-input>
+                  size="sm"></b-form-input>
         </b-form-group>
       </b-col>
 
@@ -23,13 +22,12 @@
                   :readonly="! enableChanges()"
                   autocomplete="off"
                   required
-                  size="sm"
-          ></b-form-input>
+                  size="sm"></b-form-input>
         </b-form-group>
       </b-col>
 
       <b-col md="1" class="p-0 m-0 pt-2 pl-1">
-        <b-container v-if='localState=="criando" || localState=="editando"'>
+        <b-container v-if='localState === $support.st.UPDATING || localState === $support.st.CREATING'>
           <b-row>
             <b-col class="p-0 m-0 pl-1">
               <b-icon-check-circle @click="saveFormData" class="btn btn-large text-success p-0 m-0"></b-icon-check-circle>
@@ -65,7 +63,7 @@
         required: false
       },
       state: {
-        type: String,
+        type: Number,
         required: false
       }
     },
@@ -79,15 +77,15 @@
           let r;
 
           // Faz o envio para o backend
-          if (this.localState == 'editando') {
+          if (this.localState === this.$support.st.UPDATING) {
             let id = this.form.id;
 
-            r = await this.$http.put('acesso/' + id, this.form);
+            r = await this.$http.put(this.model + '/' + id, this.form);
           }
-          else if (this.localState == 'criando') {
+          else if (this.localState === this.$support.st.CREATING) {
             this.$set(this.form, 'pessoa', this.pessoaId);
 
-            r = await this.$http.post('acesso', this.form);
+            r = await this.$http.post(this.model, this.form);
           }
 
           if (r && r.status && r.status === 200) {
@@ -98,7 +96,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAll');
+            this.$emit('getAllFunction');
 
             this.dismissFormData();
           }
@@ -115,7 +113,7 @@
       async deleteFormData() {
         // Faz o delete para o backend
         let id = this.form.id;
-        let r = await this.$http.delete('acesso/' + id, this.form);
+        let r = await this.$http.delete(this.model + '/' + id, this.form);
 
         if (r && r.status && r.status === 200) {
 
@@ -130,7 +128,7 @@
           else {
             this.$bvToast.toast(r.data.data.text, {
               title: this.title,
-              autoHideDelay: this.$settings.config.toastSucessTimeout,
+              autoHideDelay: this.$settings.config.toastSuccessTimeout,
               appendToast: true,
               variant: 'success'
             });
@@ -145,7 +143,7 @@
           });
         }
 
-        this.$emit('getAll');
+        this.$emit('getAllFunction');
       },
       validate() {
         let c = this.form.chave;
@@ -184,7 +182,8 @@
         return true;
       },
       enableChanges() {
-        return (this.localState === 'criando' || this.localState === 'editando');
+        let st = this.$support.st;
+        return (this.localState === st.UPDATING || this.localState === st.CREATING);
       },
       dismissFormData() {
         this.$set(this.form, 'chave', '');

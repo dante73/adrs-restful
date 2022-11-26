@@ -1,10 +1,10 @@
 <template>
-    <b-container fluid class="p-0 m-0 h-100">
+    <b-container class="p-0 m-0 h-100" fluid="xl">
 
         <!-- Datatable with existing data -->
         <b-row class="p-1 small">
             <b-col md="12">
-                <b-table-simple id="table-documentos" borderless responsive small striped>
+                <b-table-simple id="table-documentos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
                         <b-tr>
                             <b-th width="49%" class="bg-info text-white text-center">Documento</b-th>
@@ -12,20 +12,20 @@
                             <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
                         </b-tr>
                         <b-tr :key="documento.id" v-for="documento in documentos">
-                            <b-td align="right">
+                            <b-td class="text-right">
                                 <strong>
                                     {{ $support.typeTextByKey($settings.tipos.documentos, documento.tipo) }}
                                 </strong>
                             </b-td>
-                            <b-td align="left">{{ documento.valor }}</b-td>
-                            <b-td align="right" nowrap>
+                            <b-td class="text-left">{{ documento.valor }}</b-td>
+                            <b-td class="text-right" nowrap>
                                 <b-icon-pencil-square
-                                        @click="editar(documento)"
+                                        @click="change(documento)"
                                         class="btn btn-large p-0 text-primary"
                                         v-if="showEditingControllers()"
                                 ></b-icon-pencil-square>&nbsp;
                                 <b-icon-trash
-                                        @click="apagar(documento)"
+                                        @click="remove(documento)"
                                         class="btn btn-large p-0 text-danger"
                                         v-if="showEditingControllers()"
                                 ></b-icon-trash>
@@ -43,26 +43,26 @@
                 <b-card-group class="shadow-lg">
                     <b-card no-body class="bg-light">
                         <b-card-body class="p-1 m-1 bg-light">
-                            <b-row v-if="state === 'editando' || state === 'criando'">
+                            <b-row v-if="state === $support.st.UPDATING || state === $support.st.CREATING">
                                 <b-col md="12">
                                     <Form
-                                            @getAll="getAll"
+                                            @getAllFunction="getAllData"
                                             @cancelState="cancelState"
                                             :pessoaId="pessoaId"
                                             :state="state"
-                                            :documentoObj="selecionado"
+                                            :documentoObj="selected"
                                     />
                                 </b-col>
                             </b-row>
                             <b-row v-else>
                                 <b-col md="8">
                                     <b-button
-                                            @click="criar"
+                                            @click="create"
                                             variant="outline-success"
                                             size="sm"
                                     >Adicionar {{ documentos.length > 0 ? "uma Nova " : "" }}Documentação</b-button>
                                 </b-col>
-                                <b-col md="4" align="right">
+                                <b-col md="4" class="text-right">
                                     <CloseButtom size="sm" />
                                 </b-col>
                             </b-row>
@@ -99,7 +99,7 @@
                 required: true
             },
             pessoaState: {
-                type: String,
+                type: Number,
                 required: true
             }
         },
@@ -107,40 +107,38 @@
             return {
                 title: "Cadastro de Pessoas / Documentos",
                 documentos: [],
+                model: 'documento',
                 state: undefined,
-                selecionado: undefined,
-                carregando: true,
+                selected: undefined,
                 form: emptyForm
             }
         },
         mounted() {
-            this.getAll();
+            this.getAllData();
         },
         methods: {
-            async getAll() {
-                let r = await this.$http.get('documento/loadAllByPersonId/' + this.pessoaId);
+            async getAllData() {
+                let r = await this.$http.get(this.model + '/loadAllByPersonId/' + this.pessoaId);
 
                 if (r.status && r.status === 'error') {
-                    return;
+                    return false;
                 }
 
                 this.$set(this, 'documentos', r.data);
-                this.$set(this, 'carregando', false);
-
                 this.$set(this, 'form', emptyForm);
             },
-            criar() {
-                this.$set(this, 'selecionado', Object.assign({}, emptyForm));
-                this.$set(this, 'state', 'criando');
+            create() {
+                this.$set(this, 'selected', Object.assign({}, emptyForm));
+                this.$set(this, 'state', this.$support.st.CREATING);
             },
-            editar(documento) {
-                this.$set(this, 'selecionado', documento);
-                this.$set(this, 'state', 'editando');
+            change(documento) {
+                this.$set(this, 'selected', documento);
+                this.$set(this, 'state', this.$support.st.UPDATING);
             },
-            async apagar(documento) {
+            async remove(documento) {
                 // Faz o post para o backend
                 let id = documento.id;
-                let r = await this.$http.delete('documento/' + id, this.form);
+                let r = await this.$http.delete(this.model + '/' + id, this.form);
 
                 if (r && r.status && r.status === 200) {
 
@@ -151,7 +149,8 @@
                             appendToast: true,
                             variant: 'danger'
                         });
-                    } else {
+                    }
+                    else {
                         this.$bvToast.toast(r.data.data.text, {
                             title: this.title,
                             autoHideDelay: this.$settings.config.toastErrorTimeout,
@@ -161,13 +160,14 @@
                     }
                 }
 
-                this.getAll();
+                await this.getAllData();
             },
             showEditingControllers() {
-                return (this.pessoaState === 'criando' || this.pessoaState === 'editando');
+                let st = this.$support.st;
+                return (this.pessoaState === st.UPDATING || this.pessoaState === st.CREATING);
             },
             cancelState() {
-                this.$set(this, 'selecionado', undefined);
+                this.$set(this, 'selected', undefined);
                 this.$set(this, 'state', undefined);
             }
         }

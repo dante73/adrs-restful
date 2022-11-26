@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import LineChart from './charts/LineChart.js'
-import BarChart from './charts/BarChart.js'
-import PieChart from './charts/PieChart.js'
+import LineChart from './LineChart.js'
+import BarChart from './BarChart.js'
+import PieChart from './PieChart.js'
 
 export default {
   components: {

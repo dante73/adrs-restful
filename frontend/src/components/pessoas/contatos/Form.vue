@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="small">
+  <b-container class="small" fluid="xl">
     <b-row>
 
       <b-col md="4" class="p-0 m-0">
@@ -9,8 +9,7 @@
                   v-model="form.tipo"
                   :options="$settings.tipos.contatos"
                   @change="typeValueChanges()"
-                  size="sm"
-          >
+                  size="sm">
             <b-form-select-option :value="null" disabled>-- Selecione --</b-form-select-option>
           </b-form-select>
         </b-form-group>
@@ -25,13 +24,12 @@
                   :readonly="! enableChanges()"
                   autocomplete="off"
                   required
-                  size="sm"
-          ></b-form-input>
+                  size="sm"></b-form-input>
         </b-form-group>
       </b-col>
 
       <b-col md="1" class="p-0 m-0 pt-2 pl-1">
-        <b-container v-if='localState=="criando" || localState=="editando"'>
+        <b-container v-if='localState === $support.st.UPDATING || localState === $support.st.CREATING'>
           <b-row>
             <b-col class="p-0 m-0 pl-1">
               <b-icon-check-circle @click="saveFormData" class="btn btn-large text-success p-0 m-0"></b-icon-check-circle>
@@ -67,13 +65,9 @@
         required: false
       },
       state: {
-        type: String,
+        type: Number,
         required: false
       }
-    },
-    mounted() {
-        console.log(this.form);
-        console.log(this.contatoObj);
     },
     methods: {
       async saveFormData() {
@@ -85,15 +79,15 @@
           let r;
 
           // Faz o envio para o backend
-          if (this.localState == 'editando') {
+          if (this.localState === this.$support.st.UPDATING) {
             let id = this.form.id;
 
-            r = await this.$http.put('contato/' + id, this.form);
+            r = await this.$http.put(this.model + '/' + id, this.form);
           }
-          else if (this.localState == 'criando') {
+          else if (this.localState === this.$support.st.CREATING) {
             this.$set(this.form, 'pessoa', this.pessoaId);
 
-            r = await this.$http.post('contato', this.form);
+            r = await this.$http.post(this.model, this.form);
           }
 
           if (r && r.status && r.status === 200) {
@@ -104,7 +98,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAll');
+            this.$emit('getAllFunction');
 
             this.dismissFormData();
           }
@@ -121,7 +115,7 @@
       async deleteFormData() {
         // Faz o delete para o backend
         let id = this.form.id;
-        let r = await this.$http.delete('contato/' + id, this.form);
+        let r = await this.$http.delete(this.model + '/' + id, this.form);
 
         if (r && r.status && r.status === 200) {
 
@@ -136,7 +130,7 @@
           else {
             this.$bvToast.toast(r.data.data.text, {
               title: this.title,
-              autoHideDelay: this.$settings.config.toastSucessTimeout,
+              autoHideDelay: this.$settings.config.toastSuccessTimeout,
               appendToast: true,
               variant: 'success'
             });
@@ -151,16 +145,13 @@
           });
         }
 
-        this.$emit('getAll');
+        this.$emit('getAllFunction');
       },
       validate() {
-        let t = document.getElementById('select-tipo').value;
-        let v = document.getElementById('input-valor').value;
-
         /**
          * Se estiverem vazios não faz nada, só retorna negativo
          */
-        if (t === "") {
+        if (this.form.tipo === "") {
           this.$bvToast.toast(
                   'Meio de contato inválido!', {
                     title: this.title,
@@ -173,7 +164,7 @@
 
           return false;
         }
-        else if (v === "") {
+        else if (this.form.valor === "") {
           this.$bvToast.toast(
                   'Identificação do contato inválido!', {
                     title: this.title,
@@ -190,18 +181,19 @@
         /**
          * Seleciona uma expressão regular de validação, de acordo com o tipo de contato
          */
-        let regexp;
-        switch (t) {
+        let regexp, v;
+        switch (this.form.tipo) {
           case 'C':
             regexp = this.$settings.regexp.valida_celular;
-            v = v.replace(this.$settings.regexp.limpa_telefone, '');
+            v = this.form.valor.replace(this.$settings.regexp.limpa_telefone, '');
             break;
           case 'F':
             regexp = this.$settings.regexp.valida_telefone;
-            v = v.replace(this.$settings.regexp.limpa_telefone, '');
+            v = this.form.valor.replace(this.$settings.regexp.limpa_telefone, '');
             break;
           case 'E':
             regexp = this.$settings.regexp.valida_email;
+            v = this.form.valor;
             break;
         }
 
@@ -209,7 +201,7 @@
          * Testa a expressão com o valor e retorna negativo se não passar
          */
         if (regexp && ! regexp.test(v)) {
-          let text = this.$support.typeTextByKey(this.$settings.tipos.contatos, t);
+          let text = this.$support.typeTextByKey(this.$settings.tipos.contatos, this.form.tipo);
 
           this.$bvToast.toast(
                   text + ' inválido!', {
@@ -225,7 +217,8 @@
         return true;
       },
       enableChanges() {
-        return (this.localState === 'criando' || this.localState === 'editando');
+        let st = this.$support.st;
+        return (this.localState === st.UPDATING || this.localState === st.CREATING);
       },
       maskByType() {
         let r = "";

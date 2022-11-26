@@ -2,16 +2,18 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 // Components
-import Login from '../components/Login';
-import Logout from '../components/Logout';
+import Login from '../components/app/auth/Login';
+import Logout from '../components/app/auth/Logout';
 
 import Pessoas from '../components/pessoas/Index';
 import Clientes from '../components/clientes/Index';
 import Usuarios from '../components/usuarios/Index';
 
-import Regiao from '../components/Regiao';
-import Estado from '../components/Estado';
-import Cidade from '../components/Cidade';
+import Regiao from '../components/localidades/Regiao';
+import Estado from '../components/localidades/Estado';
+import Cidade from '../components/localidades/Cidade';
+
+import HelloWorld from "@/components/HelloWorld";
 
 Vue.use(Router);
 
@@ -29,7 +31,7 @@ export default new Router({
     },
     {
       path: '/',
-      component: Clientes
+      component: Pessoas
     },
     {
       path: '/pessoas',
@@ -54,6 +56,10 @@ export default new Router({
     {
       path: '/cidades',
       component: Cidade
+    },
+    {
+      path: '/helloworld',
+      component: HelloWorld
     }
   ]
 });

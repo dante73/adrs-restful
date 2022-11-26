@@ -4,7 +4,7 @@
 
         <!-- Using 'button-content' slot -->
         <template #button-content>
-            <b-icon icon="person-fill"></b-icon> <span>{{ userData.nome }}</span>
+            <b-icon icon="person-fill"></b-icon> <span>{{ userData.nome.split(' ')[0] }}</span>
         </template>
 
         <b-dropdown-item href="#">Meus Dados</b-dropdown-item>
@@ -29,7 +29,3 @@
         },
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -1,10 +1,10 @@
 <template>
-    <b-container fluid class="p-0 m-0 h-100">
+    <b-container class="p-0 m-0 h-100" fluid="xl">
 
         <!-- Datatable with existing data -->
         <b-row class="p-1 small">
             <b-col md="12">
-                <b-table-simple id="table-acessos" borderless responsive small striped>
+                <b-table-simple id="table-acessos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
                         <b-tr>
                             <b-th width="99%" class="bg-info text-white text-center">Chave de Acesso</b-th>
@@ -14,12 +14,12 @@
                             <b-td align="left">{{ acesso.chave }}</b-td>
                             <b-td align="right" nowrap>
                                 <b-icon-pencil-square
-                                        @click="editar(acesso)"
+                                        @click="change(acesso)"
                                         class="btn btn-large p-0 text-primary"
                                         v-if="showEditingControllers()"
                                 ></b-icon-pencil-square>&nbsp;
                                 <b-icon-trash
-                                        @click="apagar(acesso)"
+                                        @click="remove(acesso)"
                                         class="btn btn-large p-0 text-danger"
                                         v-if="showEditingControllers()"
                                 ></b-icon-trash>
@@ -37,20 +37,20 @@
                 <b-card-group class="shadow-lg">
                     <b-card no-body class="bg-light">
                         <b-card-body class="p-1 m-1 bg-light">
-                            <b-row v-if="state === 'editando' || state === 'criando'">
+                            <b-row v-if="state === $support.st.UPDATING || state === $support.st.CREATING">
                                 <b-col md="12">
                                     <Form
-                                            @getAll="getAll"
+                                            @getAllFunction="getAllData"
                                             @cancelState="cancelState"
                                             :pessoaId="pessoaId"
                                             :state="state"
-                                            :acessoObj="selecionado" />
+                                            :acessoObj="selected" />
                                 </b-col>
                             </b-row>
                             <b-row v-else>
                                 <b-col md="6">
                                     <b-button
-                                            @click="criar"
+                                            @click="create"
                                             variant="outline-success"
                                             size="sm"
                                     >Adicionar {{ acessos.length > 0 ? "um Novo " : ""}}Acesso</b-button>
@@ -89,10 +89,10 @@
         props: {
             pessoaId: {
                 type: Number,
-                required: false
+                required: true
             },
             pessoaState: {
-                type: String,
+                type: Number,
                 required: true
             }
         },
@@ -100,40 +100,38 @@
             return {
                 title: "Cadastro de Pessoas / Acessos",
                 acessos: [],
+                model: 'acesso',
                 state: undefined,
-                selecionado: undefined,
-                carregando: true,
+                selected: undefined,
                 form: emptyForm
             }
         },
         mounted() {
-            this.getAll();
+            this.getAllData();
         },
         methods: {
-            async getAll() {
-                let r = await this.$http.get('acesso/loadAllByPersonId/' + this.pessoaId);
+            async getAllData() {
+                let r = await this.$http.get(this.model + '/loadAllByPersonId/' + this.pessoaId);
 
                 if (r.status && r.status === 'error') {
-                    return;
+                    return false;
                 }
 
                 this.$set(this, 'acessos', r.data);
-                this.$set(this, 'carregando', false);
-
                 this.$set(this, 'form', emptyForm);
             },
-            criar() {
-                this.$set(this, 'selecionado', Object.assign({}, emptyForm));
-                this.$set(this, 'state', 'criando');
+            create() {
+                this.$set(this, 'selected', Object.assign({}, emptyForm));
+                this.$set(this, 'state', this.$support.st.CREATING);
             },
-            editar(acesso) {
-                this.$set(this, 'selecionado', acesso);
-                this.$set(this, 'state', 'editando');
+            change(acesso) {
+                this.$set(this, 'selected', acesso);
+                this.$set(this, 'state', this.$support.st.UPDATING);
             },
-            async apagar(acesso) {
+            async remove(acesso) {
                 // Faz o post para o backend
                 let id = acesso.id;
-                let r = await this.$http.delete('acesso/' + id, this.form);
+                let r = await this.$http.delete(this.model + '/' + id, this.form);
 
                 if (r && r.status && r.status === 200) {
 
@@ -144,7 +142,8 @@
                             appendToast: true,
                             variant: 'danger'
                         });
-                    } else {
+                    }
+                    else {
                         this.$bvToast.toast(r.data.data.text, {
                             title: this.title,
                             autoHideDelay: this.$settings.config.toastErrorTimeout,
@@ -154,16 +153,14 @@
                     }
                 }
 
-                this.getAll();
-            },
-            dismissFormData() {
-                this.$root.$emit('bv::hide::modal', 'modal-form-1');
+                await this.getAllData();
             },
             showEditingControllers() {
-                return (this.pessoaState === 'criando' || this.pessoaState === 'editando');
+                let st = this.$support.st;
+                return (this.pessoaState === st.UPDATING || this.pessoaState === st.CREATING);
             },
             cancelState() {
-                this.$set(this, 'selecionado', undefined);
+                this.$set(this, 'selected', undefined);
                 this.$set(this, 'state', undefined);
             }
         }

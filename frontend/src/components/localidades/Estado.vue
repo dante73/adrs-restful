@@ -5,7 +5,7 @@
 
             <b-row v-if=" ! estados.length > 0">
                 <b-col md="2" offset-md="6">
-                    <b-img :src="require('../assets/img/green_spinner.gif')" alt="" />
+                    <b-img :src="require('../../assets/img/green_spinner.gif')" alt="" />
                 </b-col>
             </b-row>
 

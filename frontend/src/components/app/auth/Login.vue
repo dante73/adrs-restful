@@ -1,124 +1,147 @@
 <template>
-  <div class="container">
+  <b-container fluid id="main-box">
 
-      <div class="columns">
-        <div class="column">&nbsp;</div>
-        <div class="column">
-          <div class="container">
-            
-            <section class="hero is-halfheight">
+    <b-row>
+      <b-col md="4" offset-md="4">
 
-              <div class="hero-head">&nbsp;</div>
+        <form v-on:submit.prevent="login">
 
-              <div class="hero-body">
+          <b-card class="border-success shadow-lg" fluid>
+            <b-card-header class="bg-white">
+                <b-img :src="require('../../../assets/img/logo_white_mini.png')" width="100%" fluid></b-img>
+            </b-card-header>
+            <b-card-body>
 
-                  <form class="box" v-on:submit.prevent="logar">
+              <b-container fluid>
+                <b-form-group
+                        id="input-group-1"
+                        label="Usuário"
+                        label-for="input-1"
+                >
+                  <b-form-input
+                          id="input-1"
+                          v-model="form.login"
+                          placeholder="Nome de Usuário"
+                  ></b-form-input>
+                </b-form-group>
+              </b-container>
 
-                    <div class="field">
-                      <img src="@/assets/logo_white_mini.png" width="102">
-                    </div>
+              <b-container fluid>
+                <b-form-group
+                        id="input-group-2"
+                        label="Senha"
+                        label-for="input-2"
+                >
+                  <b-form-input
+                          id="input-2"
+                          v-model="form.password"
+                          placeholder="Senha de Autenticação"
+                          type="password"
+                  ></b-form-input>
+                </b-form-group>
+              </b-container>
 
-                    <div class="field">
-                      <label class="label">Usuário</label>
-                      <div class="control has-icons-left">
-                        <input v-model="form.login" type="email" class="input" placeholder="e.g. pedro@gmail.com" required autofocus>
-                        <span class="icon is-small is-left">
-                          <i class="fa fa-envelope"></i>
-                        </span>
-                      </div>
-                    </div>
+              <b-container v-if="infoError">
+                <strong>Erro:</strong> <font color="red">{{ message }}</font>
+              </b-container>
 
-                    <div class="field">
-                      <label class="label">Senha</label>
-                      <div class="control has-icons-left">
-                        <input v-model="form.password" type="password" class="input" placeholder="**********" required>
-                        <span class="icon is-small is-left">
-                          <i class="fa fa-lock"></i>
-                        </span>
-                      </div>
-                    </div>
+            </b-card-body>
 
-                    <div class="field">
-                      <div class="columns">
-                        <div class="column">&nbsp;</div>
-                        <div class="column has-text-centered">
-                          <button class="button">
-                            Login
-                          </button>
-                        </div>
-                        <div class="column">&nbsp;</div>
-                      </div>
-                    </div>
+            <b-card-footer>
+              <b-row>
+                <b-col md="12" align="center">
+                  <b-button type="submit" variant="primary">Login</b-button>
+                </b-col>
+              </b-row>
+            </b-card-footer>
 
-                    <div class="field" v-if="infoError">
-                      <strong>Erro:</strong> <font color="red">Dados inválidos.</font>
-                    </div>
+          </b-card>
 
-                  </form>
+        </form>
 
-                </div>
+      </b-col>
+    </b-row>
 
-              <div class="hero-foot">&nbsp;</div>
-              
-            </section>
-
-          </div>
-        </div>
-        <div class="column">&nbsp;</div>
-      </div>
-
-  </div>
+  </b-container>
 </template>
 
 <script>
-import store from '@/store';
-import ls from 'local-storage';
-import axios from 'axios';
+  import store from '@/store';
+  import ls from 'local-storage';
+  import AES from 'crypto-js/aes';
 
-export default {
-  name: 'login',
-
-  data() {
-    return {
-      infoError: false,
-      form: {
-        login: '',
-        password: ''
+  export default {
+    name: 'login',
+    data() {
+      return {
+        infoError: false,
+        message: '',
+        form: {
+          login: '',
+          encrypted: '',
+          password: ''
+        }
+      };
+    },
+    beforeCreate() {
+      if (store.state.isLogged) {
+        this.$router.push('/');
       }
-    };
-  },
+    },
+    methods: {
+      async login() {
+        /* Hide message, if visible */
+        if (this.infoError) {
+          this.$set(this, 'infoError', false);
+        }
 
-  beforeCreate() {
-    if (store.state.isLogged) {
-      this.$router.push('/');
+        let p = this.form.password;
+        let mk = this.$settings.magicKey;
+
+        /* Encrypt login and password before send */
+        this.$set(this.form,'encrypted', AES.encrypt(p, mk).toString());
+
+        console.log(this.form.encrypted);
+
+        console.log(AES.decrypt(this.form.encrypted, mk).toString());
+
+        this.$set(this.form,'encrypted', 'U2FsdGVkX1/v/Ky046eypLI7ttdn71AlevxQKKSr6SA=');
+
+        /* Authenticate using backend api */
+        let response = await this.$http.post('acesso/authenticate', this.form);
+
+        if (response.data.status === 'success' && response.data.data && response.data.data.authenticated) {
+          this.$set(this, 'infoError', true);
+          this.$set(this, 'message', 'Autenticado');
+
+          /**
+           *  Armazena o token em local-storage.
+           *  O ls atua como "setter" quando o segundo valor é informado.
+           */
+          ls('token', response.data.data.token);
+
+          console.log(response.data.data.token);
+
+          /* Chama a mutation em store (através do commit ?) */
+          store.commit('LOGIN_USER');
+
+          /* Desvia para raiz */
+          this.$router.push('/');
+        }
+        else if (response.data.status === 'error') {
+          /* Em caso de erro, mostra a mensagem retornada */
+          this.$set(this, 'infoError', true);
+          this.$set(this, 'message', response.data.data);
+        }
+      }
     }
-  },
-
-  methods: {
-    logar() {
-      this.infoError = false;
-
-        //.post(`${process.env.API_ENV}/api/login`, this.form)
-      axios
-        .post(`/api/login`, this.form)
-        .then(response => {
-          if (response.data.success) {
-            ls('token', response.data.token);
-            store.commit('LOGIN_USER');
-            this.$router.push('/');
-          } else {
-            this.infoError = true;
-          }
-        });
-    }
-  }
-};
+  };
 </script>
 
 <style>
 
-.box {
-  width: 400px;
-}
-  
+    #main-box {
+      margin-top: 10%;
+    }
+
 </style>

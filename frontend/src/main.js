@@ -6,7 +6,6 @@
  * @since $ 12/07/2021 $ 14:27:43 $
  * @author Daniel <daniel@antunesbr.com>
  */
-
 import Vue from 'vue';
 import App from './App.vue';
 

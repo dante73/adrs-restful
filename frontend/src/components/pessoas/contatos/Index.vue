@@ -1,31 +1,31 @@
 <template>
-    <b-container fluid class="p-0 m-0 h-100">
+    <b-container class="p-0 m-0 h-100" fluid="xl">
 
         <!-- Datatable with existing data -->
         <b-row class="p-1 small">
             <b-col md="12">
-                <b-table-simple id="table-contatos" borderless responsive small striped>
+                <b-table-simple id="table-contatos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
                         <b-tr>
                             <b-th width="33%" class="bg-info text-white text-center">Meio de contato</b-th>
                             <b-th class="bg-info text-white text-center">Identificação</b-th>
                             <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
                         </b-tr>
-                        <b-tr :key="contato.numero" v-for="contato in contatos">
-                            <b-td align="right">
+                        <b-tr :key="contato.id" v-for="contato in contatos">
+                            <b-td class="text-right">
                                 <strong>
                                     {{ $support.typeTextByKey($settings.tipos.contatos, contato.tipo) }}
                                 </strong>
                             </b-td>
-                            <b-td align="left">{{ contato.valor }}</b-td>
-                            <b-td align="right" nowrap>
+                            <b-td class="text-left">{{ contato.valor }}</b-td>
+                            <b-td class="text-right" nowrap>
                                 <b-icon-pencil-square
-                                        @click="editar(contato)"
+                                        @click="change(contato)"
                                         class="btn btn-large p-0 text-primary"
                                         v-if="showEditingControllers()"
                                 ></b-icon-pencil-square>&nbsp;
                                 <b-icon-trash
-                                        @click="apagar(contato)"
+                                        @click="remove(contato)"
                                         class="btn btn-large p-0 text-danger"
                                         v-if="showEditingControllers()"
                                 ></b-icon-trash>
@@ -43,25 +43,25 @@
                 <b-card-group class="shadow-lg">
                     <b-card no-body class="bg-light">
                         <b-card-body class="p-1 m-1 bg-light">
-                            <b-row v-if="state === 'editando' || state === 'criando'">
+                            <b-row v-if="state === $support.st.UPDATING || state === $support.st.CREATING">
                                 <b-col md="12">
                                     <Form
-                                            @getAll="getAll"
+                                            @getAllFunction="getAllData"
                                             @cancelState="cancelState"
                                             :pessoaId="pessoaId"
                                             :state="state"
-                                            :contatoObj="selecionado" />
+                                            :contatoObj="selected" />
                                 </b-col>
                             </b-row>
                             <b-row v-else>
                                 <b-col md="6">
                                     <b-button
-                                            @click="criar"
+                                            @click="create"
                                             variant="outline-success"
                                             size="sm"
                                     >Adicionar {{ contatos.length > 0 ? "um Novo " : ""}}Contato</b-button>
                                 </b-col>
-                                <b-col md="6" align="right">
+                                <b-col md="6" class="text-right">
                                     <CloseButtom size="sm" />
                                 </b-col>
                             </b-row>
@@ -98,7 +98,7 @@
                 required: false
             },
             pessoaState: {
-                type: String,
+                type: Number,
                 required: true
             }
         },
@@ -106,40 +106,38 @@
             return {
                 title: "Cadastro de Pessoas / Contatos",
                 contatos: [],
+                model: 'contato',
                 state: undefined,
-                selecionado: undefined,
-                carregando: true,
+                selected: undefined,
                 form: emptyForm
             }
         },
         mounted() {
-            this.getAll();
+            this.getAllData();
         },
         methods: {
-            async getAll() {
-                let r = await this.$http.get('contato/loadAllByPersonId/' + this.pessoaId);
+            async getAllData() {
+                let r = await this.$http.get(this.model + '/loadAllByPersonId/' + this.pessoaId);
 
                 if (r.status && r.status === 'error') {
                     return;
                 }
 
                 this.$set(this, 'contatos', r.data);
-                this.$set(this, 'carregando', false);
-
                 this.$set(this, 'form', emptyForm);
             },
-            criar() {
-                this.$set(this, 'selecionado', Object.assign({}, emptyForm));
-                this.$set(this, 'state', 'criando');
+            create() {
+                this.$set(this, 'selected', Object.assign({}, emptyForm));
+                this.$set(this, 'state', this.$support.st.CREATING);
             },
-            editar(contato) {
-                this.$set(this, 'selecionado', contato);
-                this.$set(this, 'state', 'editando');
+            change(contato) {
+                this.$set(this, 'selected', contato);
+                this.$set(this, 'state', this.$support.st.UPDATING);
             },
-            async apagar(contato) {
+            async remove(contato) {
                 // Faz o post para o backend
                 let id = contato.id;
-                let r = await this.$http.delete('contato/' + id, this.form);
+                let r = await this.$http.delete(this.model + '/' + id, this.form);
 
                 if (r && r.status && r.status === 200) {
 
@@ -160,21 +158,17 @@
                     }
                 }
 
-                this.getAll();
-            },
-            abandonar() {
-                console.log('chamou!!');
-                this.$set(this, 'selecionado', undefined);
-                this.$set(this, 'state', undefined);
+                await this.getAllData();
             },
             dismissFormData() {
                 this.$root.$emit('bv::hide::modal', 'modal-form-1');
             },
             showEditingControllers() {
-                return (this.pessoaState === 'criando' || this.pessoaState === 'editando');
+                let st = this.$support.st;
+                return (this.pessoaState === st.UPDATING || this.pessoaState === st.CREATING);
             },
             cancelState() {
-                this.$set(this, 'selecionado', undefined);
+                this.$set(this, 'selected', undefined);
                 this.$set(this, 'state', undefined);
             }
         }

@@ -2,6 +2,16 @@ import moment from "moment";
 
 const support = {
     /**
+     * Flags que serão utilizados pelo CRUD
+     */
+    st: {
+        SELECTING: 0x0,
+        CREATING: 0x1,
+        READING: 0x2,
+        UPDATING: 0x4,
+        DELETING: 0x8
+    },
+    /**
      * Retorna qual a preposição a ser utilizada por estado (Unidade Federativa do Brasil)
      *
      * @param estado é o objeto estado retornado pelo model restful state
