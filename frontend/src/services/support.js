@@ -1,3 +1,4 @@
+import http from './http';
 import moment from "moment";
 
 const support = {
@@ -37,11 +38,26 @@ const support = {
         return "";
     },
     yearsBetween: function(from, to) {
-        var firstDate = moment(from);
-        var secondDate = moment(to);
-        var yearDiff = firstDate.diff(secondDate, "year");
+        let firstDate = moment(from);
+        let secondDate = moment(to);
+        let yearDiff = firstDate.diff(secondDate, "year");
 
         return yearDiff * -1;
+    },
+    getAllStates: async function() {
+        let s = await http.get('state');
+        return s.data.map(elm => {
+            return { text: elm.name, value: elm.id }
+        });
+    },
+    getAllCitiesByState: async function(state) {
+        let s = await http.get('city/loadAllByStateId/' + state);
+        return s.data.map(elm => {
+            return { text: elm.name, value: elm.id }
+        });
+    },
+    wHeight: function() {
+        return window.innerHeight;
     }
 }
 

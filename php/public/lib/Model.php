@@ -75,11 +75,20 @@ class Model
     }
 
     /**
-     * Monta uma expressão regular para a verificação de tabelas disponíveis
+     * Monta uma expressão regular para a verificação de model disponíveis
+     *
+     * @return string   String contendo uma expressão regular
+     */
+    public static function getReValidModelRoutes() {
+        return '/^(?:' . implode('|', array_keys(self::model)) . ')$/';
+    }
+
+    /**
+     * Monta uma expressão regular para a verificação de classes disponíveis
      *
      * @return string   String contendo uma expressão regular
      */
     public static function getReValidModelNames() {
-        return '/^(?:' . implode('|', array_keys(self::model)) . ')$/';
+        return '/^(?:' . implode('|', array_values(self::model)) . ')$/';
     }
 }

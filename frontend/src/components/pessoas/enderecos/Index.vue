@@ -5,8 +5,8 @@
         <b-row v-if="state === $support.st.UPDATING || state === $support.st.CREATING">
             <b-col md="12">
                 <Form
-                        @getAllFunction="getAllData"
-                        @cancelState="cancelState"
+                        @get-all-function="getAllData"
+                        @cancel-state="cancelState"
                         :pessoaId="pessoaId"
                         :state="state"
                         :enderecoObj="selected"
@@ -85,6 +85,7 @@
         'numero': "",
         'bairro': "",
         'cidade': null,
+        'estado': null,
         'principal': false
     };
 
@@ -119,7 +120,7 @@
         },
         methods: {
             async getAllData() {
-                let r = await this.$http.get(this.model + '/loadAllByPersonId/' + this.pessoaId);
+                let r = await this.$http.get(this.model + '/' + this.pessoaId + '/loadAllByPersonId');
 
                 if (r.status && r.status === 'error') {
                     return false;
@@ -132,9 +133,15 @@
                 this.$set(this, 'selected', Object.assign({}, emptyForm));
                 this.$set(this, 'state', this.$support.st.CREATING);
             },
-            change(endereco) {
+            async change(endereco) {
                 this.$set(this, 'selected', endereco);
                 this.$set(this, 'state', this.$support.st.UPDATING);
+
+                // Take city data
+                let r = await this.$http.get('city/' + endereco.cidade);
+
+                this.$set(this.selected, 'cidade', r.data.id);
+                this.$set(this.selected, 'estado', r.data.state_id);
             },
             async remove(endereco) {
                 // Faz o post para o backend

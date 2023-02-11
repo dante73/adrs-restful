@@ -8,11 +8,9 @@
  *
  * @param $class_name
  */
-function autoloader($class_name) {
-    require_once "lib/$class_name.php";
-}
+require_once 'lib/Support.php';
 
 /**
  * Registra no php a função autoloader.
  */
-spl_autoload_register("autoloader");
+spl_autoload_register("Support::autoloader");

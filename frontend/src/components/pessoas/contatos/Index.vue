@@ -46,8 +46,8 @@
                             <b-row v-if="state === $support.st.UPDATING || state === $support.st.CREATING">
                                 <b-col md="12">
                                     <Form
-                                            @getAllFunction="getAllData"
-                                            @cancelState="cancelState"
+                                            @get-all-function="getAllData"
+                                            @cancel-state="cancelState"
                                             :pessoaId="pessoaId"
                                             :state="state"
                                             :contatoObj="selected" />
@@ -117,7 +117,7 @@
         },
         methods: {
             async getAllData() {
-                let r = await this.$http.get(this.model + '/loadAllByPersonId/' + this.pessoaId);
+                let r = await this.$http.get(this.model + '/' + this.pessoaId + '/loadAllByPersonId');
 
                 if (r.status && r.status === 'error') {
                     return;

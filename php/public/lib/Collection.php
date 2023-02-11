@@ -66,6 +66,11 @@ class Collection
     private $method;
 
     /**
+     * Objeto pai
+     */
+    private $parent;
+
+    /**
      * Construtor da classe, configura a lista de campos e o nome da collection que receberá da classe descendente
      *
      * @param $collection_name
@@ -111,6 +116,20 @@ class Collection
      */
     protected function setDbAdmin() {
         $this->dbAdmin = DbAdmin::getInstance();
+    }
+
+    /**
+     * Configura localmente uma instância do objeto pai
+     */
+    protected function setParent($parent) {
+        $this->parent = $parent;
+    }
+
+    /**
+     * Retorna o objeto pai
+     */
+    protected function getParent() {
+        return $this->parent;
     }
 
     /**
@@ -369,7 +388,7 @@ class Collection
      *
      * @throws Exception
      */
-    function loadAll() {
+    public function loadAll() {
         /*
          * Efetua a operação com o banco de dados esperando por exceções
          */
@@ -747,12 +766,11 @@ class Collection
      * Verifica os dados de autenticação para uso do serviço
      */
     public function verifyServiceAuthorization($request_header) {
-        $config = parse_ini_file(Constants::INI_FILENAME, true);
-
         if ( ! isset($request_header['Authorization'])) {
             throw new Exception('No permission.');
         }
 
+        $config = parse_ini_file(Constants::INI_FILENAME, true);
         $key = $config['JWT']['key'];
         $token = $request_header['Authorization'];
         $decoded = JWT::decode($token, new Key($key, 'HS256'));

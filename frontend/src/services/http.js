@@ -16,10 +16,13 @@ axios.interceptors.response.use(
         return response;
     },
     error => {
-        // Quando vence o token de autenticação no servidor, força a remoção localmente.
+
+        // Verifica se o "token" do servidor está vencido e se estiver remove o token local.
         if (parseInt(error.response.status, 10) === 401) {
             localStorage.removeItem('token');
+            window.location.reload(true);
         }
+
         return Promise.reject(error);
     }
 );

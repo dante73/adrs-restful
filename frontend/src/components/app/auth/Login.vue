@@ -99,17 +99,18 @@
         let mk = this.$settings.magicKey;
 
         /* Encrypt login and password before send */
-        this.$set(this.form,'encrypted', AES.encrypt(p, mk).toString());
+        this.$set(this.form, 'encrypted', AES.encrypt(p, mk).toString());
 
-        console.log(this.form.encrypted);
+        //console.log(this.form.encrypted);
 
-        console.log(AES.decrypt(this.form.encrypted, mk).toString());
+        //console.log(AES.decrypt(this.form.encrypted, mk).toString());
 
-        this.$set(this.form,'encrypted', 'U2FsdGVkX1/v/Ky046eypLI7ttdn71AlevxQKKSr6SA=');
+        this.$set(this.form, 'encrypted', 'U2FsdGVkX1/v/Ky046eypLI7ttdn71AlevxQKKSr6SA=');
 
         /* Authenticate using backend api */
         let response = await this.$http.post('acesso/authenticate', this.form);
 
+        console.log(response);
         if (response.data.status === 'success' && response.data.data && response.data.data.authenticated) {
           this.$set(this, 'infoError', true);
           this.$set(this, 'message', 'Autenticado');

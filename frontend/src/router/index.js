@@ -2,16 +2,16 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 // Components
-import Login from '../components/app/auth/Login';
-import Logout from '../components/app/auth/Logout';
+import Login from '@/components/app/auth/Login';
+import Logout from '@/components/app/auth/Logout';
 
-import Pessoas from '../components/pessoas/Index';
-import Clientes from '../components/clientes/Index';
-import Usuarios from '../components/usuarios/Index';
+import Pessoas from '@/components/pessoas/Index';
+import Clientes from '@/components/clientes/Index';
+import Usuarios from '@/components/usuarios/Index';
 
-import Regiao from '../components/localidades/Regiao';
-import Estado from '../components/localidades/Estado';
-import Cidade from '../components/localidades/Cidade';
+import Regiao from '@/components/localidades/Regiao';
+import Estado from '@/components/localidades/Estado';
+import Cidade from '@/components/localidades/Cidade';
 
 import HelloWorld from "@/components/HelloWorld";
 

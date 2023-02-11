@@ -100,7 +100,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAllFunction');
+            this.$emit('get-all-function');
 
             this.dismissFormData();
           }
@@ -147,7 +147,7 @@
           });
         }
 
-        this.$emit('getAllFunction');
+        this.$emit('get-all-function');
       },
       validate() {
         /**
@@ -207,7 +207,7 @@
 
         document.getElementById('select-tipo-documento').focus();
 
-        this.$emit('cancelState');
+        this.$emit('cancel-state');
       },
       typeValueChanges() {
         this.$set(this.form, 'valor', '');

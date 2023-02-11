@@ -188,7 +188,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAllFunction');
+            this.$emit('get-all-function');
 
             this.dismissFormData();
           }
@@ -235,7 +235,7 @@
           });
         }
 
-        this.$emit('getAllFunction');
+        this.$emit('get-all-function');
       },
       validate() {
         return true;
@@ -245,39 +245,32 @@
         return (this.localState === st.UPDATING || this.localState === st.CREATING);
       },
       dismissFormData() {
-        this.$set(this.form, 'cep', '');
-        this.$set(this.form, 'rua', '');
-        this.$set(this.form, 'numero', '');
-        this.$set(this.form, 'bairro', '');
-        this.$set(this.form, 'estado', 0);
-        this.$set(this.form, 'cidade', 0);
-
-        document.getElementById('input-cep').focus();
-
-        this.$emit('cancelState');
+        this.$emit('cancel-state');
       },
       choseState() {
         this.getAllCities();
       },
       async getAllStates() {
-        let s = await this.$http.get('state');
+        let allStates = await this.$support.getAllStates();
 
-        this.$set(this, 'allStates', s.data.map(elm => {
-          return { text: elm.name, value: elm.id };
-        }))
+        this.$set(this, 'allStates', allStates);
       },
       async getAllCities() {
         let sid = this.form.estado;
-        let s = await this.$http.get('city/loadAllByStateId/' + sid);
+        let allCities = await this.$support.getAllCitiesByState(sid);
 
-        this.$set(this, 'allCities', s.data.map(elm => {
-          return { text: elm.name, value: elm.id };
-        }))
+        this.$set(this, 'allCities', allCities);
       }
     },
     watch: {
       enderecoObj: function () {
         this.$set(this, 'form', this.enderecoObj);
+
+        /* When changing, need to take city data on select */
+        let e = this.form.estado;
+        if (typeof(e) === "number" && e !== 0) {
+          this.getAllCities();
+        }
       },
       state: function () {
         this.$set(this, 'localState', this.state);

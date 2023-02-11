@@ -246,22 +246,24 @@ class Endereco extends Collection
         }
     }
 
-    public function loadAllByPersonId($params, $data = []) {
+    /**
+     * Abre o objeto pai (Pessoa) pelo ID informado
+     */
+    public function loadParentById($id) {
         /**
-         * O primeiro parâmetro após o nome do método deve ser o id da pessoa
+         * Cria um objeto com a classe pai
          */
-        $pid = $params[0];
+        $parent = new Pessoa();
+        $parent->setId($id);
+        $parent->load();
 
-        if (! preg_match('/^\d+$/', $pid)) {
-            throw new Exception('Invalid parameter!');
-        }
+        /**
+         * Seta o objeto pai
+         */
+        $this->setParent($parent);
+    }
 
-        $pid = filter_var($pid, FILTER_SANITIZE_NUMBER_INT);
-
-        if ( ! $pid) {
-            throw new Exception('Invalid parameter!');
-        }
-
+    public function loadAllByPersonId($params, $data = []) {
         /*
          * Efetua a operação com o banco de dados esperando por exceções
          */
@@ -276,7 +278,7 @@ class Endereco extends Collection
                 . ' FROM ' . $this->getCollection_name()
                 . ' LEFT JOIN city ON(endereco.cidade = city.id)'
                 . ' LEFT JOIN state ON(city.state_id = state.id)'
-                . ' WHERE pessoa = \'' . $pid . '\';';
+                . ' WHERE pessoa = \'' . $this->getParent()->getId() . '\';';
 
             /*
              * Emite comando no servidor conectado em DbAdmin e trata o retorno
@@ -307,6 +309,5 @@ class Endereco extends Collection
         catch (PDOException $e) {
             throw new Exception('PDO Error : ' . $e->getMessage());
         }
-
     }
 }

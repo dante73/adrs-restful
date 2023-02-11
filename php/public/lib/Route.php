@@ -73,6 +73,16 @@ class Route
                     http_response_code(400);
                     throw new Exception('Invalid data.');
                 }
+
+                /*
+                 * Verifica se existem mais parâmetros (operação) para processar
+                 */
+                if (sizeof($arr) > 0) {
+                    /**
+                     * Próximo parâmetro
+                     */
+                    $op = array_shift($arr);
+                }
             }
             else {
                 /**
@@ -102,7 +112,7 @@ class Route
         /*
          * Verifica se a rota especificada em @name é valida, tem um model definido em Model
          */
-        if ( ! preg_match(Model::getReValidModelNames(), $name)) {
+        if ( ! preg_match(Model::getReValidModelRoutes(), $name)) {
             http_response_code(404);
             throw new Exception('Invalid route.');
         }

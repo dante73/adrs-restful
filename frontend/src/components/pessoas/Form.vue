@@ -253,6 +253,7 @@
                 </b-tab>
                 <!-- End of enderecos component -->
 
+                <!-- Acessos component -->
                 <b-tab title="Acesso">
                   <b-card-group>
                     <b-card no-body style="min-height: 240px; border-top: none;">
@@ -262,6 +263,7 @@
                     </b-card>
                   </b-card-group>
                 </b-tab>
+                <!-- End of acessos component -->
 
               </b-tabs>
 
@@ -352,7 +354,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAllFunction');
+            this.$emit('get-all-function');
           }
           else {
             this.$bvToast.toast(r.data, {
@@ -397,7 +399,7 @@
           });
         }
 
-        this.$emit('getAllFunction');
+        this.$emit('get-all-function');
       },
       dismissFormData() {
         this.$root.$emit('bv::hide::modal', 'modal-form-1');

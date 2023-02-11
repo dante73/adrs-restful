@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="small">
+  <b-container class="small" fluid="xl">
     <b-row>
 
       <b-col md="5" class="p-0 m-0">
@@ -96,7 +96,7 @@
               variant: 'success'
             });
 
-            this.$emit('getAllFunction');
+            this.$emit('get-all-function');
 
             this.dismissFormData();
           }
@@ -143,7 +143,7 @@
           });
         }
 
-        this.$emit('getAllFunction');
+        this.$emit('get-all-function');
       },
       validate() {
         let c = this.form.chave;
@@ -186,12 +186,9 @@
         return (this.localState === st.UPDATING || this.localState === st.CREATING);
       },
       dismissFormData() {
-        this.$set(this.form, 'chave', '');
-        this.$set(this.form, 'senha', '');
-
         document.getElementById('input-chave').focus();
 
-        this.$emit('cancelState');
+        this.$emit('cancel-state');
       }
     },
     watch: {

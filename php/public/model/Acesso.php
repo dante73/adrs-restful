@@ -39,8 +39,6 @@ class Acesso extends Collection
              * Configura nome da tabela na classe pai
              */
             parent::__construct($this->collection_name);
-
-            $this->bypassAuthorization = true;
         }
         /**
          * Se houver qualquer falha com o banco de dados, gera estado de exceção geral
@@ -191,22 +189,24 @@ class Acesso extends Collection
         }
     }
 
-    public function loadAllByPersonId($params, $data = []) {
+    /**
+     * Abre o objeto pai (Pessoa) pelo ID informado
+     */
+    public function loadParentById($id) {
         /**
-         * O primeiro parâmetro após o nome do método deve ser o id da pessoa
+         * Cria um objeto com a classe pai
          */
-        $pid = $params[0];
+        $parent = new Pessoa();
+        $parent->setId($id);
+        $parent->load();
 
-        if (! preg_match('/^\d+$/', $pid)) {
-            throw new Exception('Invalid parameter!');
-        }
+        /**
+         * Seta o objeto pai
+         */
+        $this->setParent($parent);
+    }
 
-        $pid = filter_var($pid, FILTER_SANITIZE_NUMBER_INT);
-
-        if ( ! $pid) {
-            throw new Exception('Invalid parameter!');
-        }
-
+    public function loadAllByPersonId($params, $data = []) {
         /*
          * Efetua a operação com o banco de dados esperando por exceções
          */
@@ -214,7 +214,8 @@ class Acesso extends Collection
             /*
              * Monta o comando SQL
              */
-            $sqlcmd = 'SELECT * FROM ' . $this->getCollection_name() . ' WHERE pessoa = \'' . $pid . '\' ORDER BY chave;';
+            $sqlcmd = 'SELECT * FROM ' . $this->getCollection_name()
+                . ' WHERE pessoa = \'' . $this->getParent()->getId() . '\' ORDER BY chave;';
 
             /*
              * Emite comando no servidor conectado em DbAdmin e trata o retorno

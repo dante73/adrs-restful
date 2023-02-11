@@ -15,7 +15,7 @@
             <b-row>
                 <b-col md="12" class="p-0 m-0">
                     <b-container class="p-0 m-0" fluid="xl">
-                        <Form @getAllFunction="getAllData" :state="state" :pessoaObj="selected" />
+                        <Form @get-all-function="getAllData" :state="state" :pessoaObj="selected" />
                     </b-container>
                 </b-col>
             </b-row>
@@ -28,8 +28,11 @@
                 <b-col md="12">
 
                     <b-row class="p-0 py-1">
-                        <b-col md="11">
+                        <b-col md="3">
                             <h4 class="title">Cadastro de Pessoas<span></span></h4>
+                        </b-col>
+                        <b-col md="8">
+                            <input type="text" class="form-control" placeholder="Pesquisar por Nº ou Nome.">
                         </b-col>
                         <b-col md="1" class="text-right">
                             <b-button variant="success" @click="create">
