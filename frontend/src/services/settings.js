@@ -5,6 +5,11 @@ const settings = {
     wikipedia: 'https://pt.wikipedia.org/wiki/',
     magicKey: 'Chave secreta 1',
     locale: 'pt-br',
+    colors: {
+        bgTitleBar: 'bg-info',
+        bgModalTitleBar: 'success',
+        fgModalTitleBar: 'light'
+    },
     regexp: {
         limpa_valor: new RegExp(/[-./]/g),
         limpa_telefone: new RegExp(/[() -]/g),

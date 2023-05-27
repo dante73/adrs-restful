@@ -13,6 +13,12 @@ const support = {
         DELETING: 0x8
     },
     /**
+     * Estes valores não são exatos, servem somente para calcular a altura das tabelas do sistema.
+     */
+    navbarHeight: 65,
+    footerHeight: 20,
+    searchbarHeight: 40,
+    /**
      * Retorna qual a preposição a ser utilizada por estado (Unidade Federativa do Brasil)
      *
      * @param estado é o objeto estado retornado pelo model restful state
@@ -58,6 +64,35 @@ const support = {
     },
     wHeight: function() {
         return window.innerHeight;
+    },
+    mainHeight: function() {
+        let total = window.innerHeight - 5;
+        let navb = document.getElementById('navbar-container');
+        let footer = document.getElementById('footer-container');
+        let searchbar = document.getElementById('searchbar-container');
+
+        if (navb) {
+            total -= navb.offsetHeight
+        }
+        else {
+            total -= this.navbarHeight;
+        }
+
+        if (footer) {
+            total -= footer.offsetHeight;
+        }
+        else {
+            total -= this.footerHeight;
+        }
+
+        if (searchbar) {
+            total -= searchbar.offsetHeight;
+        }
+        else {
+            total -= this.searchbarHeight;
+        }
+
+        return  total;
     }
 }
 

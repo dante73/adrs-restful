@@ -27,7 +27,7 @@
           <b-col md="8" class="p-0 m-0">
             <b-container class="p-0 m-0" fluid="xl">
 
-              <b-tabs small fill>
+              <b-tabs v-model="tabIndex" small fill>
 
                 <b-tab title="Principal">
                   <b-card-group>
@@ -101,6 +101,7 @@
                                         v-model="form.nome"
                                         :readonly="! showEditingControllers()"
                                         placeholder="Nome da Pessoa"
+                                        autocomplete="off"
                                         required
                                         size="sm"></b-form-input>
                               </b-form-group>
@@ -134,7 +135,7 @@
                         </b-container>
 
                         <!-- Toolbar -->
-                        <b-row class="p-1 pt-3 small" v-if="showEditingControllers()">
+                        <b-row class="p-1 pt-3 small" v-if="showEditingControllers() || localState === $support.st.DELETING">
                           <b-col md="12">
                             <b-card-group class="shadow-lg">
                               <b-card no-body class="bg-light">
@@ -171,14 +172,14 @@
 
                                 <b-card-body v-else-if='localState === $support.st.DELETING' class="p-1 m-1 bg-light">
                                   <b-row>
-                                    <b-col md="8">
+                                    <b-col md="6">
                                       <b-button
                                               @click="deleteFormData"
                                               variant="outline-danger"
                                               size="sm">Apagar</b-button>
                                     </b-col>
-                                    <b-col md="4" class="text-right">
-                                      <CloseButtom size="sm" caption="Abandonar" />
+                                    <b-col md="6" class="text-right">
+                                      <CloseButtom size="sm" caption="Abandonar Operação" />
                                     </b-col>
                                   </b-row>
                                 </b-card-body>
@@ -218,7 +219,7 @@
                 </b-tab>
 
                 <!-- Contatos component -->
-                <b-tab title="Contatos" active>
+                <b-tab title="Contatos" :disabled="localState === $support.st.CREATING">
                   <b-card-group>
                     <b-card no-body style="min-height: 240px; border-top: none;">
                       <b-card-body class="p-0 m-0">
@@ -230,7 +231,7 @@
                 <!-- End of contatos component -->
 
                 <!-- Documentos component -->
-                <b-tab title="Documentação">
+                <b-tab title="Documentação" :disabled="localState === $support.st.CREATING">
                   <b-card-group>
                     <b-card no-body style="min-height: 240px; border-top: none;">
                       <b-card-body class="p-0 m-0">
@@ -242,7 +243,7 @@
                 <!-- End of documentos component -->
 
                 <!-- Enderecos component -->
-                <b-tab title="Endereço">
+                <b-tab title="Endereço" :disabled="localState === $support.st.CREATING">
                   <b-card-group>
                     <b-card no-body style="min-height: 240px; border-top: none;">
                       <b-card-body class="p-0 m-0">
@@ -254,7 +255,7 @@
                 <!-- End of enderecos component -->
 
                 <!-- Acessos component -->
-                <b-tab title="Acesso">
+                <b-tab title="Acesso" :disabled="localState === $support.st.CREATING">
                   <b-card-group>
                     <b-card no-body style="min-height: 240px; border-top: none;">
                       <b-card-body class="p-0 m-0">
@@ -304,7 +305,8 @@
         avatar: {
           url: '',
           src: ''
-        }
+        },
+        tabIndex: (this.state === this.$support.st.CREATING || this.state === this.$support.st.DELETING? 0 : 1)
       }
     },
     props: {
@@ -354,7 +356,28 @@
               variant: 'success'
             });
 
-            this.$emit('get-all-function');
+            if (this.localState === st.UPDATING) {
+              this.$emit('get-all-function');
+
+              this.$root.$emit('bv::hide::modal', 'modal-form-1');
+            }
+            else if (this.localState === st.CREATING) {
+              // Retorna o registro criado na base de dados.
+              let returnedNewRecord = r.data.data.data;
+
+              // Atribuí o elemento gravado na rest e retornado ao Form.
+              this.$set(this, 'pessoaObj', returnedNewRecord);
+              this.$set(this, 'form', returnedNewRecord);
+
+              // Mantém a janela aberta e a operação passa a ser de edição
+              await this.$set(this, 'localState', st.UPDATING);
+
+              // Muda para tab de contatos
+              this.$set(this, 'tabIndex', 1);
+
+              // Atualiza tabela com dados criados
+              this.$emit('get-all-function');
+            }
           }
           else {
             this.$bvToast.toast(r.data, {
@@ -400,8 +423,10 @@
         }
 
         this.$emit('get-all-function');
+        this.$root.$emit('bv::hide::modal', 'modal-form-1');
       },
       dismissFormData() {
+        this.$emit('get-all-function');
         this.$root.$emit('bv::hide::modal', 'modal-form-1');
       },
       onReset() {
@@ -498,12 +523,14 @@
                 variant: 'danger'
               });
             }
-          });
+          }, (reason => {
+            console.log(reason);
+          }));
         }
       },
       showEditingControllers() {
         let st = this.$support.st;
-        return (this.localState === st.CREATING || this.localState === st.UPDATING || this.localState === st.DELETING);
+        return (this.localState === st.CREATING || this.localState === st.UPDATING);
       },
       getImgUrl() {
         return this.$settings.restapi + 'assets/' + this.model + '/' + this.pessoaObj.imagem;

@@ -11,7 +11,6 @@ require_once 'lib/Support.php';
 require_once 'lib/Collection.php';
 
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 class Acesso extends Collection
 {

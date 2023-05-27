@@ -1,22 +1,18 @@
 <template>
 
-    <!-- Navbar -->
     <b-navbar
-            type="light"
-            toggleable="sm"
-            class="pl-1 py-0 border-bottom border-success shadow-sm"
-            bg-transparent
-            fixed-top
-            sticky-top
-            small
+            id="navbar-container"
+            class="navbar navbar-expand-md navbar-light fixed-top bg-white pl-1 py-0 border-bottom border-success shadow-sm"
     >
 
         <ADRsLogo />
 
-        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <b-collapse id="nav-collapse" is-nav class="pb-0">
-            <b-container class="p-0 m-0" fluid="xl">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <b-container class="p-0 m-0" fluid>
 
                 <!-- Linha um da navbar, painel de informações gerais -->
                 <b-row class="p-0 m-0 w-100">
@@ -50,7 +46,7 @@
                 <!-- End of linha dois da navbar -->
 
             </b-container>
-        </b-collapse>
+        </div>
     </b-navbar>
 
 </template>

@@ -120,14 +120,16 @@
         },
         methods: {
             async getAllData() {
-                let r = await this.$http.get(this.model + '/' + this.pessoaId + '/loadAllByPersonId');
+                if (this.pessoaId) {
+                    let r = await this.$http.get(this.model + '/' + this.pessoaId + '/loadAllByPersonId');
 
-                if (r.status && r.status === 'error') {
-                    return false;
+                    if (r.status && r.status === 'error') {
+                        return false;
+                    }
+
+                    this.$set(this, 'enderecos', r.data);
+                    this.$set(this, 'form', emptyForm);
                 }
-
-                this.$set(this, 'enderecos', r.data);
-                this.$set(this, 'form', emptyForm);
             },
             create() {
                 this.$set(this, 'selected', Object.assign({}, emptyForm));

@@ -31,8 +31,9 @@ class Rest
         $this->action();
         $this->auth();
         $this->environment();
-        $this->data();
+        $this->dataSent();
         $this->file();
+        $this->dataCheck();
     }
 
     public function serve() {
@@ -108,23 +109,15 @@ class Rest
     }
 
     /**
-     * Seta "flag" @dataNeeded para métodos que fazem envio de dados.
+     * Seta "flag" @dataNeeded para métodos que fazem envio de dados e os coloca na propriedade data.
      */
-    private function data() {
+    private function dataSent() {
         $this->dataNeeded = (boolean)($this->method === 'POST' || $this->method === 'PUT');
 
         /*
          * Capta todos os dados passados por JSON.
          */
         $this->data = json_decode(file_get_contents("php://input", true));
-
-        /**
-         * Tanto no PUT quanto no POST é obrigatório o envio de dados para serem processados.
-         */
-        if ($this->dataNeeded && ! $this->data) {
-            http_response_code(400);
-            throw new Exception('Invalid JSON.');
-        }
     }
 
     /**
@@ -146,6 +139,20 @@ class Rest
              * O model movimenta o arquivo enviado e finaliza o processo retornando o resultado por JSON.
              */
             $this->model->saveFile();
+        }
+    }
+
+    /**
+     * Última checagem de dados antes da gravação.
+     * @throws Exception Caso haja a necessidade de dados e estes não foram postados.
+     */
+    private function dataCheck() {
+        /**
+         * Tanto no PUT quanto no POST é obrigatório o envio de dados para serem processados.
+         */
+        if ($this->dataNeeded && ! $this->data) {
+            http_response_code(400);
+            throw new Exception('Invalid JSON.');
         }
     }
 

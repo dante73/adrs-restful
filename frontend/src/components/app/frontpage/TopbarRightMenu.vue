@@ -1,5 +1,5 @@
 <template>
-    <b-container class="p-0">
+    <b-container class="p-0 text-right" fluid>
 
         <TopbarUserMenu />
 

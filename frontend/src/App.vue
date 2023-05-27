@@ -1,8 +1,8 @@
 <template>
-    <b-container class="p-0 m-0 h-100" fluid="xl">
+    <b-container class="p-0 m-0 mt-3 pt-5" fluid>
 
         <!-- Sidebar and Topbar with all components, only for users who is logged in -->
-        <b-container class="p-0 m-0" v-if="isLogged" fluid="xl">
+        <b-container class="p-0 m-0" v-if="isLogged" fluid>
 
             <Sidebar />
 
@@ -12,13 +12,13 @@
         <!-- End of TopBar -->
 
         <!-- Main container with the view for router -->
-        <b-container class="p-0 m-0" fluid="xl">
+        <b-container class="p-0 m-0" fluid>
             <router-view></router-view>
         </b-container>
         <!-- End of main container with the view for router -->
 
         <!-- Footer -->
-        <b-container class="p-0 m-0" v-if="isLogged" fluid="xl">
+        <b-container class="p-0 m-0" v-if="isLogged" fluid>
             <Footer />
         </b-container>
         <!-- End of Footer -->

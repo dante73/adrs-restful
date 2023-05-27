@@ -1,20 +1,20 @@
 <template>
-    <b-container class="small" fluid="xl">
+    <b-container class="small" fluid>
 
         <!-- Modal window -->
         <b-modal
+                :header-bg-variant="$settings.colors.bgModalTitleBar"
+                :header-text-variant="$settings.colors.fgModalTitleBar"
+                :title="modalTitle"
+                @close="handleClose"
                 id="modal-form-1"
                 size="lg"
-                :title="modalTitle"
                 v-model="modalShow"
-                @close="handleClose"
-                no-close-on-backdrop
-                hide-footer
-                header-bg-variant="success"
-                header-text-variant="light">
+                no-close-on-backdrop hide-footer
+        >
             <b-row>
                 <b-col md="12" class="p-0 m-0">
-                    <b-container class="p-0 m-0" fluid="xl">
+                    <b-container class="p-0 m-0" fluid>
                         <Form @get-all-function="getAllData" :state="state" :pessoaObj="selected" />
                     </b-container>
                 </b-col>
@@ -23,62 +23,116 @@
         <!-- End of modal window -->
 
         <!-- Show existing data -->
-        <b-container class="p-0 py-2" fluid="xl">
+        <b-container class="p-1" fluid>
             <b-row>
                 <b-col md="12">
 
-                    <b-row class="p-0 py-1">
-                        <b-col md="3">
-                            <h4 class="title">Cadastro de Pessoas<span></span></h4>
-                        </b-col>
-                        <b-col md="8">
-                            <input type="text" class="form-control" placeholder="Pesquisar por Nº ou Nome.">
-                        </b-col>
-                        <b-col md="1" class="text-right">
-                            <b-button variant="success" @click="create">
-                                <strong><b-icon-plus-circle></b-icon-plus-circle></strong>
-                            </b-button>
-                        </b-col>
-                    </b-row>
+                    <b-container id='searchbar-container' class="m-0 p-0 small" fluid>
+                        <b-row class="p-0 shadow rounded" :class="$settings.colors.bgTitleBar">
+                            <b-col md="5" class="p-0 pl-2 pt-2">
+                                <h5 class="title text-white">Cadastro de Pessoas<span></span></h5>
+                            </b-col>
+                            <b-col md="7">
+                                <b-row class="p-1">
+                                    <b-col md="2" class="text-right">
+                                        <b-form-checkbox
+                                                v-model="compacto"
+                                                size="sm"
+                                                :button-variant="(compacto ? 'danger' : 'light')"
+                                                class="p-0 pt-1 small w-100"
+                                                button
+                                        >
+                                            Compacta
+                                        </b-form-checkbox>
+                                    </b-col>
+                                    <b-col md="9">
+                                        <b-input-group
+                                                size="sm"
+                                                class="pt-1"
+                                        >
 
-                    <b-row class="p-0 py-1">
-                        <b-col md="12">
+                                            <b-input-group-prepend>
+                                                <b-input-group-text>
+                                                    <b-icon icon="filter-circle" variant="success"></b-icon>
+                                                </b-input-group-text>
+                                            </b-input-group-prepend>
 
-                            <b-table-simple>
-                                <b-thead>
-                                    <b-tr variant="warning">
-                                        <b-th class="text-left">#</b-th>
-                                        <b-th>&nbsp;</b-th>
-                                        <b-th class="text-center"><b-icon icon="camera-fill" aria-hidden="true"></b-icon></b-th>
-                                        <b-th class="text-center">Nome</b-th>
-                                        <b-th class="text-center">Data de Nascimento</b-th>
-                                        <b-th class="text-center" width="1%">Ação</b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr :key="pessoa.id" v-for="pessoa in pessoas">
-                                        <b-td class="text-left">{{ pessoa.id }}</b-td>
-                                        <b-td class="text-center">
-                                            <b-icon :icon="genderIcon(pessoa.genero)" aria-hidden="true"></b-icon>
-                                        </b-td>
-                                        <b-td class="text-center">
-                                            <b-icon v-if="pessoa.imagem" :icon="photoIcon()" aria-hidden="true"></b-icon>
-                                        </b-td>
-                                        <b-td>{{ pessoa.nome }}</b-td>
-                                        <b-td class="text-center">{{ moment(pessoa.nascimento).format($settings.format.date) }}</b-td>
-                                        <b-td class="text-right">
-                                            <b-button-group size="sm">
-                                                <b-button @click="getInfo(pessoa)" variant="outline-default"><b-icon-eye></b-icon-eye></b-button>
-                                                <b-button @click="change(pessoa)" variant="outline-default"><b-icon-pencil-square></b-icon-pencil-square></b-button>
-                                                <b-button @click="remove(pessoa)" variant="outline-default"><b-icon-trash></b-icon-trash></b-button>
-                                            </b-button-group>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
+                                            <b-form-input
+                                                    id="filter-input"
+                                                    v-model="filter"
+                                                    type="search"
+                                                    class="small form-control"
+                                                    placeholder="Filtrar por Nº, Nome ou Data de Nascimento."
+                                            ></b-form-input>
+                                        </b-input-group>
+                                    </b-col>
+                                    <b-col md="1" class=" pt-1 pr-1">
+                                        <b-container class="m-0 p-0 text-right" fluid>
+                                            <b-icon
+                                                    icon="plus-circle"
+                                                    class="m-0 p-0 pr-1 text-white btn btn-lg font-weight-bold"
+                                                    style="width: 32px; height:32px;"
+                                                    @click="create"
+                                            ></b-icon>
+                                        </b-container>
+                                    </b-col>
+                                </b-row>
+                            </b-col>
+                        </b-row>
+                    </b-container>
 
-                        </b-col>
-                    </b-row>
+                    <b-container class="pt-1" fluid>
+                        <b-row>
+                            <b-col md="10" offset-md="1">
+
+                                <!-- Data table -->
+                                <b-table
+                                        id="tabela"
+                                        :items="pessoas"
+                                        :fields="fields"
+                                        :filter="filter"
+                                        :small="compacto"
+                                        :show-empty="true"
+                                        :sticky-header="$support.mainHeight() + 'px'"
+                                        borderless responsive striped
+                                >
+                                    <template #cell(genero)="data">
+                                        <b-icon :icon="genderIcon(data.item.genero)" aria-hidden="true"></b-icon>
+                                    </template>
+
+                                    <template #cell(idade)="data">
+                                        {{ $support.yearsBetween(data.item.nascimento, new Date()) }} anos
+                                    </template>
+
+                                    <template #cell(nascimento)="data">
+                                        {{ moment(data.item.nascimento).format($settings.format.date) }}
+                                    </template>
+
+                                    <template #cell(actions)="pessoa">
+                                        <b-row class="m-0 p-0">
+                                            <b-col md="3">
+                                                <b-button @click="getInfo(pessoa.item)" variant="info" size="sm" class="shadow">
+                                                    <b-icon-eye></b-icon-eye>
+                                                </b-button>
+                                            </b-col>
+                                            <b-col md="3">
+                                                <b-button @click="change(pessoa.item)" variant="warning" size="sm" class="shadow">
+                                                    <b-icon-pencil-square></b-icon-pencil-square>
+                                                </b-button>
+                                            </b-col>
+                                            <b-col md="3">
+                                                <b-button @click="remove(pessoa.item)" variant="danger" size="sm" class="shadow">
+                                                    <b-icon-trash></b-icon-trash>
+                                                </b-button>
+                                            </b-col>
+                                        </b-row>
+                                    </template>
+                                </b-table>
+                                <!-- End of Data table -->
+
+                            </b-col>
+                        </b-row>
+                    </b-container>
 
                 </b-col>
             </b-row>
@@ -110,6 +164,53 @@
                 state: undefined,
                 selected: undefined,
                 modalShow: false,
+                compacto: false,
+                filter: '',
+                fields: [
+                    {
+                        key: 'id',
+                        label: '#',
+                        stickyColumn: true,
+                        thAttr: { width: '1%', bgcolor: 'white' },
+                        class: 'text-right'
+                    },
+                    {
+                        key: 'genero',
+                        label: 'Gênero',
+                        filterByFormatted: true,
+                        stickyColumn: true,
+                        thAttr: { width: '1%', bgcolor: 'white' },
+                        class: 'text-right'
+                    },
+                    {
+                        key: 'nome',
+                        label: 'Nome',
+                        thAttr: { width: '20%', bgcolor: 'white' },
+                        stickyColumn: true
+                    },
+                    {
+                        key: 'idade',
+                        label: 'Idade',
+                        filterByFormatted: true,
+                        stickyColumn: true,
+                        thAttr: { width: '10%', bgcolor: 'white' },
+                        class: 'text-center'
+                    },
+                    {
+                        key: 'nascimento',
+                        label: 'Data de Nascimento',
+                        stickyColumn: true,
+                        thAttr: { width: '15%', bgcolor: 'white' },
+                        class: 'text-center'
+                    },
+                    {
+                        key: 'actions',
+                        label: 'Acões',
+                        thAttr: { width: '10%', bgcolor: 'white' },
+                        stickyColumn: true,
+                        class: 'text-center'
+                    }
+                ]
             }
         },
         computed: {
@@ -142,7 +243,8 @@
                 let r = await this.$http.get(this.model);
 
                 this.$set(this, 'pessoas', r.data);
-                this.$set(this, 'modalShow', false);
+
+                this.$root.$emit('bv::refresh::table', 'tabela')
             },
             getInfo(pessoa) {
                 this.$set(this, 'selected', pessoa);

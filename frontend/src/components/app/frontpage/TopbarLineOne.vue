@@ -5,16 +5,28 @@
 
             <b-icon
                     icon="key-fill"
-                    scale="1"
-                    class="text-warning"
+                    size="xl"
+                    class="text-primary"
                     v-if="hasAToken()"
                     v-b-tooltip.hover
                     :title="toolTipData()"></b-icon>
-            <b-icon icon="key" scale="1" class="text-danger" v-else></b-icon>
+            <b-icon size="xl" icon="key" class="text-danger" v-else></b-icon>
             &nbsp;
 
-            <b-icon icon="hdd-network-fill" scale="1" class="text-warning" v-if="hasNetwork()"></b-icon>
-            <b-icon icon="hdd-network" scale="1" class="text-danger" v-else></b-icon>
+            <b-icon
+                    icon="hdd-network-fill"
+                    size="xl"
+                    class="text-primary"
+                    v-if="hasNetwork()"
+                    v-b-tooltip.hover
+                    title="Online"></b-icon>
+            <b-icon
+                    icon="hdd-network"
+                    size="xl"
+                    class="text-danger"
+                    v-else
+                    v-b-tooltip.hover
+                    title="Offline"></b-icon>
             &nbsp;
 
         </b-col>

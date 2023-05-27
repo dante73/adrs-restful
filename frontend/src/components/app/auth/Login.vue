@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid id="main-box">
+  <b-container id="main-box" fluid>
 
     <b-row>
       <b-col md="4" offset-md="4">

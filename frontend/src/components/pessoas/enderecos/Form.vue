@@ -35,7 +35,7 @@
       </b-row>
 
       <b-row>
-        <b-col md="6" class="p-0 m-0 pl-1">
+        <b-col md="4" class="p-0 m-0 pl-1">
           <b-form-group
                   id="input-group-numero"
                   label="Número/Complemento"
@@ -49,7 +49,7 @@
                     size="sm"></b-form-input>
           </b-form-group>
         </b-col>
-        <b-col md="6" class="p-0 m-0 px-1">
+        <b-col md="8" class="p-0 m-0 px-1">
           <b-form-group
                   id="input-group-bairro"
                   label="Bairro"

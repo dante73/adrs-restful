@@ -2,20 +2,17 @@
   <b-container class="small" fluid="xl">
     <b-row>
 
-      <b-col md="5" class="p-0 m-0">
-        <b-form-group id="input-group-chave" class="text-center p-0 m-0">
-          <b-form-input
-                  id="input-chave"
-                  v-model="form.chave"
-                  :readonly="! enableChanges()"
-                  autocomplete="off"
-                  required
-                  size="sm"></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col md="6" class="p-0 m-0 pl-1">
-        <b-form-group id="input-group-senha" class="text-center p-0 m-0">
+      <b-col md="12" class="p-0 m-0">
+        <b-input-group id="input-group-tipo" class="text-center p-0 m-0">
+          <b-input-group-prepend class="pr-1">
+            <b-form-input
+                    id="input-chave"
+                    v-model="form.chave"
+                    :readonly="! enableChanges()"
+                    autocomplete="off"
+                    required
+                    size="sm"></b-form-input>
+          </b-input-group-prepend>
           <b-form-input
                   id="input-senha"
                   v-model="form.senha"
@@ -23,20 +20,15 @@
                   autocomplete="off"
                   required
                   size="sm"></b-form-input>
-        </b-form-group>
-      </b-col>
-
-      <b-col md="1" class="p-0 m-0 pt-2 pl-1">
-        <b-container v-if='localState === $support.st.UPDATING || localState === $support.st.CREATING'>
-          <b-row>
-            <b-col class="p-0 m-0 pl-1">
-              <b-icon-check-circle @click="saveFormData" class="btn btn-large text-success p-0 m-0"></b-icon-check-circle>
-            </b-col>
-            <b-col class="p-0 m-0 pl-1">
-              <b-icon-arrow-counterclockwise @click="dismissFormData" class="btn btn-large text-danger p-0 m-0"></b-icon-arrow-counterclockwise>
-            </b-col>
-          </b-row>
-        </b-container>
+          <b-input-group-append v-if='localState === $support.st.UPDATING || localState === $support.st.CREATING'>
+            <b-button variant="outline-success" size="sm">
+              <b-icon-check-circle @click="saveFormData"></b-icon-check-circle>
+            </b-button>
+            <b-button variant="outline-danger" size="sm">
+              <b-icon-arrow-counterclockwise @click="dismissFormData"></b-icon-arrow-counterclockwise>
+            </b-button>
+          </b-input-group-append>
+        </b-input-group>
       </b-col>
 
     </b-row>
