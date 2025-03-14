@@ -1,28 +1,28 @@
 <template>
-    <b-container class="p-0 m-0" fluid>
+    <b-container class="p-0 m-0 small" fluid>
 
-        <b-col md="12" class="text-center">
+        <b-col md="12">
 
             <b-icon
                     icon="key-fill"
-                    size="xl"
                     class="text-primary"
                     v-if="hasAToken()"
                     v-b-tooltip.hover
                     :title="toolTipData()"></b-icon>
-            <b-icon size="xl" icon="key" class="text-danger" v-else></b-icon>
+            <b-icon
+                    icon="key"
+                    class="text-danger"
+                    v-else></b-icon>
             &nbsp;
 
             <b-icon
                     icon="hdd-network-fill"
-                    size="xl"
                     class="text-primary"
                     v-if="hasNetwork()"
                     v-b-tooltip.hover
                     title="Online"></b-icon>
             <b-icon
                     icon="hdd-network"
-                    size="xl"
                     class="text-danger"
                     v-else
                     v-b-tooltip.hover
@@ -57,7 +57,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

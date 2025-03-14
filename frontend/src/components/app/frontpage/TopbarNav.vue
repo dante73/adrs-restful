@@ -13,38 +13,57 @@
 
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <b-container class="p-0 m-0" fluid>
-
-                <!-- Linha um da navbar, painel de informações gerais -->
                 <b-row class="p-0 m-0 w-100">
-                    <TopbarLineOne />
-                </b-row>
-                <!-- End of painel de informações gerais -->
 
-                <!-- linha dois da navbar -->
-                <b-row class="p-0 m-0 w-100">
-                    <b-col md="9" class="p-0 m-0 pt-1 small">
-                        <b-navbar-nav>
+                    <b-col md="3" class="p-0 m-0">
 
-                            <TopbarDataMenu />
+                        <!-- Linha um da navbar, lado esquerdo -->
+                        <b-row class="p-0 m-0 w-100">
+                            <TopbarLeftLineOne />
+                        </b-row>
+                        <!-- End of painel de informações gerais -->
 
-                            <TopbarUtilsMenu />
+                        <b-row class="p-0 m-0 w-100">
 
-                        </b-navbar-nav>
-                    </b-col>
-                    <b-col md="3" class="p-0 m-0 pt-1 small">
+                            <!-- Left aligned nav items -->
+                            <b-navbar-nav>
+                                <TopbarLeftMenu />
+                            </b-navbar-nav>
+                            <!-- End of left aligned nav items -->
 
-                        <!-- Right aligned nav items -->
-                        <b-navbar-nav>
-
-                            <TopbarRightMenu />
-
-                        </b-navbar-nav>
-                        <!-- End of right aligned nav items -->
+                        </b-row>
 
                     </b-col>
-                </b-row>
-                <!-- End of linha dois da navbar -->
 
+                    <!-- Show current option -->
+                    <b-col md="6" class="p-0 m-0 pt-2">
+                        <b-container class="p-0 m-0 py-1 shadow-sm rounded-pill bg-light border border-default">
+                            <span class="mx-auto font-weight-bold small">{{ currentRouteName }}</span>
+                        </b-container>
+                    </b-col>
+                    <!-- End of show current option -->
+
+                    <b-col md="3" class="p-0 m-0">
+
+                        <!-- Linha um da navbar, painel de informações gerais -->
+                        <b-row class="p-0 m-0 w-100">
+                            <TopbarRightLineOne />
+                        </b-row>
+                        <!-- End of painel de informações gerais -->
+
+                        <b-row class="p-0 m-0 w-100 justify-content-end">
+
+                            <!-- Right aligned nav items -->
+                            <b-navbar-nav>
+                                <TopbarRightMenu />
+                            </b-navbar-nav>
+                            <!-- End of right aligned nav items -->
+
+                        </b-row>
+
+                    </b-col>
+
+                </b-row>
             </b-container>
         </div>
     </b-navbar>
@@ -53,19 +72,24 @@
 
 <script>
     import ADRsLogo from "@/components/app/frontpage/ADRsLogo";
-    import TopbarLineOne from "@/components/app/frontpage/TopbarLineOne";
-    import TopbarDataMenu from "@/components/app/frontpage/TopbarDataMenu";
-    import TopbarUtilsMenu from "@/components/app/frontpage/TopbarUtilsMenu";
+    import TopbarLeftLineOne from "@/components/app/frontpage/TopbarLeftLineOne";
+    import TopbarLeftMenu from "@/components/app/frontpage/TopbarLeftMenu";
+    import TopbarRightLineOne from "@/components/app/frontpage/TopbarRightLineOne";
     import TopbarRightMenu from "@/components/app/frontpage/TopbarRightMenu";
 
     export default {
         name: "TopbarNavBar",
         components: {
             ADRsLogo,
-            TopbarLineOne,
-            TopbarDataMenu,
-            TopbarUtilsMenu,
+            TopbarLeftLineOne,
+            TopbarLeftMenu,
+            TopbarRightLineOne,
             TopbarRightMenu
+        },
+        computed: {
+            currentRouteName() {
+                return this.$route.name;
+            }
         }
     }
 </script>

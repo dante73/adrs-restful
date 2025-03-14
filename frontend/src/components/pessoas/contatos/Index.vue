@@ -4,12 +4,12 @@
         <!-- Datatable with existing data -->
         <b-row class="p-1 small">
             <b-col md="12">
-                <b-table-simple id="table-contatos" borderless small striped>
+                <b-table-simple id="table-contatos" small striped borderless>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
-                        <b-tr>
-                            <b-th width="33%" class="bg-info text-white text-center">Meio de contato</b-th>
+                        <b-tr class="shadow-lg">
+                            <b-th width="33%" class="bg-info text-white text-center rounded-left">Meio de contato</b-th>
                             <b-th class="bg-info text-white text-center">Identificação</b-th>
-                            <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
+                            <b-th width="1%" class="bg-info text-white text-center rounded-right">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
                         </b-tr>
                         <b-tr :key="contato.id" v-for="contato in contatos">
                             <b-td class="text-right">
@@ -133,7 +133,7 @@
                 this.$set(this, 'state', this.$support.st.CREATING);
             },
             change(contato) {
-                this.$set(this, 'selected', contato);
+                this.$set(this, 'selected', Object.assign({}, contato));
                 this.$set(this, 'state', this.$support.st.UPDATING);
             },
             async remove(contato) {

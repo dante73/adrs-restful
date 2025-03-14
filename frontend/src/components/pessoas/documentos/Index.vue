@@ -6,10 +6,10 @@
             <b-col md="12">
                 <b-table-simple id="table-documentos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
-                        <b-tr>
-                            <b-th width="49%" class="bg-info text-white text-center">Documento</b-th>
+                        <b-tr class="shadow-lg">
+                            <b-th width="49%" class="bg-info text-white text-center rounded-left">Documento</b-th>
                             <b-th width="50%" class="bg-info text-white text-center">Identificação</b-th>
-                            <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
+                            <b-th width="1%" class="bg-info text-white text-center rounded-right">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
                         </b-tr>
                         <b-tr :key="documento.id" v-for="documento in documentos">
                             <b-td class="text-right">

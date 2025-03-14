@@ -20,7 +20,7 @@
             <b-col md="12">
                 <b-table-simple id="table-enderecos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto;">
-                        <b-tr :key="endereco.id" v-for="endereco in enderecos">
+                        <b-tr class="rounded" :key="endereco.id" v-for="endereco in enderecos">
                             <b-td>
                                 {{ endereco.rua }}, {{ endereco.numero }}<br/>
                                 {{ endereco.bairro }} - {{ endereco.cidade_nome }}<br/>

@@ -53,7 +53,7 @@ const support = {
     getAllStates: async function() {
         let s = await http.get('state');
         return s.data.map(elm => {
-            return { text: elm.name, value: elm.id }
+            return { text: elm.name, value: elm.id, short: elm.state_short }
         });
     },
     getAllCitiesByState: async function(state) {
@@ -66,10 +66,9 @@ const support = {
         return window.innerHeight;
     },
     mainHeight: function() {
-        let total = window.innerHeight - 5;
+        let total = window.innerHeight - 25;
         let navb = document.getElementById('navbar-container');
         let footer = document.getElementById('footer-container');
-        let searchbar = document.getElementById('searchbar-container');
 
         if (navb) {
             total -= navb.offsetHeight
@@ -85,14 +84,26 @@ const support = {
             total -= this.footerHeight;
         }
 
-        if (searchbar) {
-            total -= searchbar.offsetHeight;
-        }
-        else {
-            total -= this.searchbarHeight;
-        }
-
         return  total;
+    },
+    findIndexByKeyValue: function(obj, key, value) {
+        // Navega pelo objeto em busca da chave e valor.
+        for (let [k, v] of Object.entries(obj)) {
+            // Encontrou a chave, verifica o valor e retorna o índice correspondente.
+            if (k === key && obj[key] === value) {
+                return k;
+            }
+            // Encontrou outro objeto, procura a chave e valor neste objeto.
+            if (typeof(v) === 'object' && v !== null) {
+                // Faz uma busca recursiva.
+                let found = this.findIndexByKeyValue(v, key, value);
+                // Se encontrou, retorna o índice.
+                if (found) {
+                    return k;
+                }
+            }
+        }
+        return 0;
     }
 }
 

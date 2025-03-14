@@ -1,5 +1,5 @@
 <template>
-    <b-container class="p-0 m-0 mt-3 pt-5" fluid>
+    <b-container class="p-0 m-0 pt-5 mt-1" fluid>
 
         <!-- Sidebar and Topbar with all components, only for users who is logged in -->
         <b-container class="p-0 m-0" v-if="isLogged" fluid>

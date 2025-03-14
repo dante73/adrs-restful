@@ -22,42 +22,52 @@ export default new Router({
   linkActiveClass: 'active',
   routes: [
     {
+      name: 'Entrar',
       path: '/login',
       component: Login
     },
     {
+      name: 'Sair',
       path: '/logout',
       component: Logout
     },
     {
+      name: 'Home',
       path: '/',
       component: Pessoas
     },
     {
+      name: 'Cadastro de Pessoas',
       path: '/pessoas',
       component: Pessoas
     },
     {
+      name: 'Cadastro de Clientes',
       path: '/clientes',
       component: Clientes
     },
     {
+      name: 'Cadastro de Usuários',
       path: '/usuarios',
       component: Usuarios
     },
     {
+      name: 'Tabela de Regiões',
       path: '/regioes',
       component: Regiao
     },
     {
+      name: 'Tabela de Estados',
       path: '/estados',
       component: Estado
     },
     {
+      name: 'Tabela de Cidades',
       path: '/cidades',
       component: Cidade
     },
     {
+      name: 'Hello World',
       path: '/helloworld',
       component: HelloWorld
     }

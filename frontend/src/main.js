@@ -48,6 +48,11 @@ import VueJWT from 'vuejs-jwt';
 
 Vue.use(VueJWT);
 
+// ViaCep
+import ViaCep from './services/viacep';
+
+Vue.use(ViaCep);
+
 // Router
 import router from './router'
 
@@ -56,5 +61,22 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
-  render: h => h(App)
+  render: h => h(App),
+  data() {
+      return {
+        lostFocus: 0,
+      }
+  },
+  created: function() {
+      window.onblur = function() {
+          this.lostFocus = moment(new Date());
+      }
+      window.onfocus = function() {
+          // Recarrega a página se a janela perdeu o foco há "@config.windowRefreshTimeout" minutos ou mais.
+          let minutes = moment(new Date()).diff(this.lostFocus, "minutes");
+          if (minutes > settings.config.windowRefreshTimeout) {
+              window.location.reload();
+          }
+      }
+  }
 }).$mount('#app')

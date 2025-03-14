@@ -23,11 +23,12 @@
         <!-- End of modal window -->
 
         <!-- Show existing data -->
-        <b-container class="p-1" fluid>
+        <b-container fluid>
             <b-row>
                 <b-col md="12">
 
-                    <b-container id='searchbar-container' class="m-0 p-0 small" fluid>
+                    <!--
+                        <b-container id='searchbar-container' class="m-0 p-0 small" fluid>
                         <b-row class="p-0 shadow rounded" :class="$settings.colors.bgTitleBar">
                             <b-col md="5" class="p-0 pl-2 pt-2">
                                 <h5 class="title text-white">Cadastro de Pessoas<span></span></h5>
@@ -36,9 +37,9 @@
                                 <b-row class="p-1">
                                     <b-col md="2" class="text-right">
                                         <b-form-checkbox
-                                                v-model="compacto"
+                                                v-model="compact"
                                                 size="sm"
-                                                :button-variant="(compacto ? 'danger' : 'light')"
+                                                :button-variant="(compact ? 'danger' : 'light')"
                                                 class="p-0 pt-1 small w-100"
                                                 button
                                         >
@@ -80,8 +81,9 @@
                             </b-col>
                         </b-row>
                     </b-container>
+                    -->
 
-                    <b-container class="pt-1" fluid>
+                    <b-container :style="getListContainerStyle()" fluid>
                         <b-row>
                             <b-col md="10" offset-md="1">
 
@@ -91,13 +93,29 @@
                                         :items="pessoas"
                                         :fields="fields"
                                         :filter="filter"
-                                        :small="compacto"
+                                        :per-page="compact ? $settings.config.perPageCompact : $settings.config.perPage"
+                                        :current-page="currentPage"
+                                        :small="compact"
                                         :show-empty="true"
                                         :sticky-header="$support.mainHeight() + 'px'"
+                                        thead-class="p-0 m-0"
                                         borderless responsive striped
                                 >
+
                                     <template #cell(genero)="data">
                                         <b-icon :icon="genderIcon(data.item.genero)" aria-hidden="true"></b-icon>
+                                    </template>
+
+                                    <template #cell(photo)="data">
+                                        <b-icon
+                                                v-b-tooltip.hover.auto.d1="{
+                                                    title: getImgHtml(data.item),
+                                                    html: true,
+                                                    variant: 'light',
+                                                    customClass: 'm-0 p-0'
+                                                }"
+                                                :icon="photoIcon(data.item.imagem)"
+                                                aria-hidden="true"></b-icon>
                                     </template>
 
                                     <template #cell(idade)="data">
@@ -134,6 +152,28 @@
                         </b-row>
                     </b-container>
 
+                    <b-container fluid>
+                        <b-row>
+                            <b-col md="10" offset-md="1">
+
+                                <!-- Pagination -->
+                                <b-pagination
+                                        aria-controls="tabela"
+                                        v-model="currentPage"
+                                        :total-rows="totalRows"
+                                        :per-page="compact ? $settings.config.perPageCompact : $settings.config.perPage"
+                                        align="fill"
+                                        class="end"
+                                        size="sm"
+                                        variant="danger"
+                                        pills
+                                ></b-pagination>
+                                <!-- End of Pagination -->
+
+                            </b-col>
+                        </b-row>
+                    </b-container>
+
                 </b-col>
             </b-row>
         </b-container>
@@ -164,8 +204,10 @@
                 state: undefined,
                 selected: undefined,
                 modalShow: false,
-                compacto: false,
+                compact: false,
                 filter: '',
+                currentPage: 1,
+                totalRows: 0,
                 fields: [
                     {
                         key: 'id',
@@ -176,7 +218,7 @@
                     },
                     {
                         key: 'genero',
-                        label: 'Gênero',
+                        label: '',
                         filterByFormatted: true,
                         stickyColumn: true,
                         thAttr: { width: '1%', bgcolor: 'white' },
@@ -187,6 +229,13 @@
                         label: 'Nome',
                         thAttr: { width: '20%', bgcolor: 'white' },
                         stickyColumn: true
+                    },
+                    {
+                        key: 'photo',
+                        label: '',
+                        stickyColumn: true,
+                        thAttr: { width: '1%', bgcolor: 'white' },
+                        class: 'text-right'
                     },
                     {
                         key: 'idade',
@@ -243,6 +292,7 @@
                 let r = await this.$http.get(this.model);
 
                 this.$set(this, 'pessoas', r.data);
+                this.$set(this, 'totalRows', r.data.length);
 
                 this.$root.$emit('bv::refresh::table', 'tabela')
             },
@@ -272,8 +322,24 @@
             genderIcon(gender) {
                 return 'gender-' + ( gender === 'M' ? 'male' : 'female' );
             },
-            photoIcon() {
-                return  'camera';
+            photoIcon(image) {
+                return  (image ? 'camera-fill' : 'camera' );
+            },
+            getImgHtml(person) {
+                if (person.imagem) {
+                    return '<container class="shadow-lg" fluid><img src="'
+                        + this.$settings.restapi
+                        + 'assets/'
+                        + this.model
+                        + '/'
+                        + person.imagem
+                        + '" width="256px"></img></container>';
+                }
+            },
+            getListContainerStyle() {
+                return 'min-height: '
+                    + (this.$support.mainHeight()) + 'px; height: '
+                    + (this.$support.mainHeight()) + 'px;';
             }
         }
     }

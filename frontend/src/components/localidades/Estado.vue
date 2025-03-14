@@ -59,7 +59,7 @@
                         <b-table
                                 :items="estados"
                                 :fields="estadosFields"
-                                :sticky-header="($support.mainHeight() - 45) + 'px'"
+                                :sticky-header="($support.mainHeight() - gapAfterTable) + 'px'"
                                 @row-selected="chosenOne"
                                 select-mode="single"
                                 style="direction: rtl"
@@ -80,7 +80,7 @@
                         <b-table
                                 :items="cidades"
                                 :fields="cidadesFields"
-                                :sticky-header="($support.mainHeight() - 45) + 'px'"
+                                :sticky-header="($support.mainHeight() - gapAfterTable) + 'px'"
                                 @row-selected="chosenOneCity"
                                 select-mode="single"
                                 style="direction: ltr"
@@ -99,6 +99,7 @@
     export default {
         data() {
             return {
+                gapAfterTable: 60,
                 estados: [],
                 cidades: [],
                 estadosFields: [

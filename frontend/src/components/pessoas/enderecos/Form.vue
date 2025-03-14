@@ -1,5 +1,5 @@
 <template>
-  <b-container class="pt-2 small" fluid="xl">
+  <b-container class="pt-2 small bg-light" fluid="xl">
 
     <b-container class="p-0 m-0" style="height: 210px;" fluid="xl">
       <b-row>
@@ -15,6 +15,7 @@
                     v-mask="$settings.masks.cep"
                     autocomplete="off"
                     required
+                    @change="getAddressByCep()"
                     size="sm"></b-form-input>
           </b-form-group>
         </b-col>
@@ -58,7 +59,7 @@
             <b-form-input
                     id="input-bairro"
                     v-model="form.bairro"
-                    autocomplete="off"
+                  autocomplete="off"
                     required
                     size="sm"></b-form-input>
           </b-form-group>
@@ -260,6 +261,53 @@
         let allCities = await this.$support.getAllCitiesByState(sid);
 
         this.$set(this, 'allCities', allCities);
+      },
+      async getAddressByCep() {
+        let cep = this.form.cep.replace(/\D/, '');
+
+        if (this.localState === this.$support.st.CREATING && cep.match(/\d{8}/)) {
+          this.$set(this.form, 'rua', 'Buscando informação...');
+          this.$set(this.form, 'bairro', 'Buscando informação...');
+
+          let address = await this.$viaCep.buscarCep(cep);
+
+          if ("erro" in address) {
+            this.$set(this.form, 'rua', '');
+            this.$set(this.form, 'bairro', '');
+
+            this.$bvToast.toast('Cep não encontrado !', {
+              title: this.title,
+              autoHideDelay: this.$settings.config.toastErrorTimeout,
+              appendToast: true,
+              variant: 'danger'
+            });
+
+            this.$set(this.form, 'cep', '');
+
+            // Move o foco para o complemento/número
+            document.getElementById('input-cep').focus();
+
+            return false;
+          }
+
+          this.$set(this.form, 'rua', address.logradouro);
+          this.$set(this.form, 'bairro', address.bairro);
+
+          // Seleciona o Estado
+          let state = this.$support.findIndexByKeyValue(this.allStates, 'short', address.uf);
+
+          this.$set(this.form, 'estado', this.allStates[state].value);
+
+          // Seleciona a Cidade
+          await this.getAllCities();
+
+          let city = this.$support.findIndexByKeyValue(this.allCities, 'text', address.localidade);
+
+          this.$set(this.form, 'cidade', this.allCities[city].value);
+
+          // Move o foco para o complemento/número
+          document.getElementById('input-numero').focus();
+        }
       }
     },
     watch: {

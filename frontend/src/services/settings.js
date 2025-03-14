@@ -33,9 +33,12 @@ const settings = {
         telefone: '(##) ####-####'
     },
     config: {
+        perPage: 13,
+        perPageCompact: 16,
         maxImageSize: 1000000,
         toastErrorTimeout: 5000,
         toastSuccessTimeout: 3000,
+        windowRefreshTimeout: 20    // in minutes
     },
     tipos: {
         acesso: [

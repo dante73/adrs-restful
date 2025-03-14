@@ -11,7 +11,9 @@
                     :readonly="! enableChanges()"
                     autocomplete="off"
                     required
-                    size="sm"></b-form-input>
+                    size="sm"
+                    placeholder="Chave de Acesso/ID"
+            ></b-form-input>
           </b-input-group-prepend>
           <b-form-input
                   id="input-senha"
@@ -19,7 +21,9 @@
                   :readonly="! enableChanges()"
                   autocomplete="off"
                   required
-                  size="sm"></b-form-input>
+                  size="sm"
+                  placeholder="Senha"
+          ></b-form-input>
           <b-input-group-append v-if='localState === $support.st.UPDATING || localState === $support.st.CREATING'>
             <b-button variant="outline-success" size="sm">
               <b-icon-check-circle @click="saveFormData"></b-icon-check-circle>

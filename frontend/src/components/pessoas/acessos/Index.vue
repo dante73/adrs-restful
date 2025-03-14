@@ -6,9 +6,9 @@
             <b-col md="12">
                 <b-table-simple id="table-acessos" borderless small striped>
                     <b-tbody style="height: 200px; display: block; overflow: auto; ">
-                        <b-tr>
-                            <b-th width="99%" class="bg-info text-white text-center">Chave de Acesso</b-th>
-                            <b-th width="1%" class="bg-info text-white text-center">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
+                        <b-tr class="shadow-lg">
+                            <b-th width="99%" class="bg-info text-white text-center rounded-left">Chave de Acesso</b-th>
+                            <b-th width="1%" class="bg-info text-white text-center rounded-right">{{ showEditingControllers() ? "Ação" : "" }}</b-th>
                         </b-tr>
                         <b-tr :key="acesso.id" v-for="acesso in acessos">
                             <b-td align="left">{{ acesso.chave }}</b-td>
